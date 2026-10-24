@@ -596,6 +596,10 @@ def _answer(question: str, case_id: str | None = None, debug: bool = False) -> A
                 "snippet": chunk.text[:200].replace("\n", " "),
                 "source_file": meta.get("source_file"),
             })
+        # Ensure all explicitly identified article numbers are present in debug_info
+        for n in sorted(set(result.article_numbers)):
+            if not any(item.get("article_number") == n for item in debug_items):
+                debug_items.append({"article_number": n})
         response.debug_info = debug_items
     # Log the answer for the case (if any) so the UI can show a history.
     if case_id:
