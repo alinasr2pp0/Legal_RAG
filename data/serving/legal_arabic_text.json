@@ -1,0 +1,36 @@
+[
+  {
+    "chunk_id": "article_1",
+    "text": "(1) تسرى النصوص التشريعية على جميع المسائل التي يتناولها النص في لفظه أو في فحواه. (2) إذا لم يوجد نص تشريعي يمكن تطبيقه، حكم القاضي بمقتضى العرف، وإذا لم يوجد، فبمقتضى مبادئ الشريعة الإسلامية، وإذا لم يوجد فبمقتضى مبادئ القانون الطبيعي وقواعد العدالة.",
+    "article_ids": ["article_1"],
+    "metadata": {
+      "article_id": "article_1",
+      "number": 1,
+      "is_repealed": false,
+      "text_missing": false,
+      "text_incomplete": false,
+      "book": null,
+      "part": "الأول",
+      "chapter": null,
+      "page_number": 1,
+      "chunk_part": 0
+    }
+  },
+  {
+    "chunk_id": "article_163",
+    "text": "كل خطأ سبب ضرراً للغير يلزم من ارتكبه بالتعويض.",
+    "article_ids": ["article_163"],
+    "metadata": {
+      "article_id": "article_163",
+      "number": 163,
+      "is_repealed": false,
+      "text_missing": false,
+      "text_incomplete": false,
+      "book": "الكتاب الأول",
+      "part": "باب الالتزامات",
+      "chapter": "مصادر الالتزام",
+      "page_number": 45,
+      "chunk_part": 0
+    }
+  }
+]

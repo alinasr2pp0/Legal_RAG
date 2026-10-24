@@ -1,0 +1,29 @@
+{
+  "chunks_sha256": "d66c2d07c16876f3137de4da734f392cca79d8df4e3efacdceb57f936684ac61",
+  "articles_sha256": "2f5d79b4a45cf4056bab1df0fd63b4aa21ef4db2d2037f8ba7b21e691f8befdb",
+  "source_pdf_sha256": "2d6419fb262dab712f7bf5f6e31834bea74fbcf03b78ae081dd35d156915eebf",
+  "n_articles": 1149,
+  "n_chunks": 1150,
+  "n_repealed": 56,
+  "text_missing_articles": [],
+  "text_incomplete_articles": [
+    1022
+  ],
+  "validation": {
+    "total": 1149,
+    "valid": 1149,
+    "missing_numbers": []
+  },
+  "source_corrections": [
+    {
+      "id": "SC-1021-1022",
+      "articles": [
+        1021,
+        1022
+      ],
+      "action": "moved Arabic paragraphs (2)-(3) from the Article 1021 block to Article 1022; Article 1022 marked text_incomplete (Arabic paragraph (1) is not in the PDF)",
+      "evidence": "PDF pp.147-148: the English translation of Article 1021 has one paragraph (servient owner not obliged to carry out works) while the Arabic block under its marker has three; the English of Article 1022 contains the sentences that match Arabic paragraphs (2) (free himself by abandoning the servient tenement) and (3) (cost of upkeep shared in proportion to benefit). The Arabic sentence matching English paragraph (1) of 1022 is absent.",
+      "needs_review": "Fill Article 1022 paragraph (1) from an official Arabic edition and confirm this relocation against it."
+    }
+  ]
+}

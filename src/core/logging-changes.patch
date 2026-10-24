@@ -1,0 +1,194 @@
+--- a/src/api/main.py	2026-10-19 14:16:37.000000000 +0300
++++ b/src/api/main.py	2026-10-20 04:16:53.832954754 +0300
+@@ -9,16 +9,18 @@
+ from __future__ import annotations
+ 
+ import json
++import logging
+ import os
+ import re
+ import threading
+ import time
++import uuid
+ from collections.abc import Iterator
+ from functools import lru_cache
+ from pathlib import Path
+ from typing import TYPE_CHECKING, Any, Literal
+ 
+-from fastapi import FastAPI, HTTPException, Query
++from fastapi import FastAPI, HTTPException, Query, Request
+ from fastapi.middleware.cors import CORSMiddleware
+ from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
+ from pydantic import BaseModel, Field
+@@ -30,6 +32,7 @@
+ from core.config import settings
+ from core.feedback import feedback_counts, log_feedback
+ from core.guardrails import INJECTION_REFUSAL, detect_injection, redact_pii
++from core.logging_config import request_id_var, setup_logging
+ from core.models import Chunk, ScoredChunk
+ from core.query_log import log_query
+ from rag.monitoring.exporter import (
+@@ -46,7 +49,38 @@
+     from rag.reranking.reranker import BaseReranker
+     from rag.retrieval.sparse import BM25Index
+ 
++setup_logging()
++logger = logging.getLogger("api")
++
+ app = FastAPI(title="Egyptian Civil Code RAG", version="0.2.0")
++
++
++@app.middleware("http")
++async def request_log(request: Request, call_next):  # type: ignore[no-untyped-def]
++    """Correlation id + one access line per request (no query strings, no bodies)."""
++    rid = request.headers.get("X-Request-ID") or uuid.uuid4().hex[:12]
++    token = request_id_var.set(rid)
++    start = time.perf_counter()
++    try:
++        response = await call_next(request)
++    except Exception:
++        logger.exception("%s %s -> unhandled error", request.method, request.url.path)
++        raise
++    finally:
++        request_id_var.reset(token)
++    response.headers["X-Request-ID"] = rid
++    if request.url.path not in _QUIET_PATHS:
++        ms = (time.perf_counter() - start) * 1000
++        level = logging.WARNING if response.status_code >= 500 else logging.INFO
++        logger.log(
++            level, "%s %s -> %d (%.0f ms)", request.method, request.url.path,
++            response.status_code, ms, extra={},
++        )
++    return response
++
++
++_QUIET_PATHS = {"/metrics", "/health", "/favicon.ico"}
++
+ if settings.cors_origins:
+     app.add_middleware(
+         CORSMiddleware,
+@@ -177,6 +211,11 @@
+         search_tool=search_tool,
+         orchestrator=orchestrator,
+     )
++    logger.info(
++        "pipeline ready: embedder=%s llm=%s reranker=%s",
++        settings.local_embedding_model, settings.llm_model_primary,
++        type(reranker).__name__,
++    )
+ 
+ 
+ class ArticleInfo(BaseModel):
+@@ -419,6 +458,7 @@
+     "sources": [{"article_number": N, "citation": "..."}]} (+ critic info)."""
+     start = time.perf_counter()
+     if settings.injection_guard_enabled and detect_injection(question):
++        logger.warning("ask refused: prompt-injection pattern detected")
+         record_query((time.perf_counter() - start) * 1000)
+         return AskResponse(answer=INJECTION_REFUSAL, sources=[])
+     extra: list[ScoredChunk] = []
+@@ -437,6 +477,7 @@
+         if cached is not None:
+             latency = (time.perf_counter() - start) * 1000
+             record_query(latency)
++            logger.info("ask answered from cache (%.0f ms)", latency)
+             stats.record(
+                 latency_ms=latency, passed=cached.critic.passed if cached.critic else None,
+                 grounding=cached.critic.grounding if cached.critic else None,
+@@ -447,6 +488,7 @@
+     try:
+         pipeline = _get_pipeline()
+     except RuntimeError as exc:
++        logger.error("pipeline not ready: %s", exc)
+         raise HTTPException(status_code=503, detail=str(exc)) from exc
+     orchestrator: Orchestrator = pipeline["orchestrator"]  # type: ignore[assignment]
+ 
+@@ -457,6 +499,7 @@
+         try:
+             result = orchestrator.run(question, spans=spans, extra_chunks=extra or None)
+         except RuntimeError as exc:  # e.g. every LLM in the fallback chain failed
++            logger.error("ask failed: %s", exc)
+             raise HTTPException(status_code=503, detail=str(exc)) from exc
+         spans.log_generation(
+             model=settings.llm_model_primary,
+@@ -469,6 +512,13 @@
+         log_query(result.question, verdict.passed if verdict else None)
+     latency = (time.perf_counter() - start) * 1000
+     record_query(latency)
++    logger.info(
++        "ask done: %.0f ms critic_passed=%s grounding=%s revisions=%d sources=%d web=%s "
++        "pii=%d case=%s",
++        latency, verdict.passed if verdict else None,
++        round(verdict.grounding, 2) if verdict else None, result.revisions,
++        len(result.citations), result.used_web, len(result.pii_found), bool(case_id),
++    )
+     stats.record(
+         latency_ms=latency,
+         passed=verdict.passed if verdict else None,
+--- a/src/core/config.py	2026-10-19 14:16:37.000000000 +0300
++++ b/src/core/config.py	2026-10-20 04:16:26.358411043 +0300
+@@ -76,6 +76,11 @@
+     feedback_log_path: str = "data/logs/feedback.jsonl"
+     query_log_path: str = "data/logs/queries.jsonl"  # PII-redacted; feeds monitor_drift
+ 
++    # --- Logging (see core/logging_config.py) ---
++    log_level: str = "INFO"  # DEBUG | INFO | WARNING | ERROR
++    log_json: bool = False  # true -> one JSON object per line
++    log_file: str = "data/logs/app.log"  # "" -> console only
++
+     # --- Data ---
+     chunks_path: str = "data/serving/chunks.json"  # see scripts/data/export_serving_data.py
+ 
+--- a/src/rag/generation/llm_client.py	2026-10-17 03:46:33.000000000 +0300
++++ b/src/rag/generation/llm_client.py	2026-10-20 04:17:23.391581377 +0300
+@@ -3,6 +3,7 @@
+ 
+ from __future__ import annotations
+ 
++import logging
+ import time
+ from abc import ABC, abstractmethod
+ from collections.abc import Iterator
+@@ -14,6 +15,8 @@
+ from rag.context_building.builder import build_user_prompt
+ from rag.generation.prompts import system_prompt
+ 
++logger = logging.getLogger(__name__)
++
+ 
+ class BaseLLMClient(ABC):
+     @abstractmethod
+@@ -74,6 +77,9 @@
+                     latency_ms=latency_ms,
+                 )
+             except Exception as exc:  # noqa: BLE001 - fallback chain by design
++                logger.warning(
++                    "LLM %s failed (%s: %s); trying next model", model, type(exc).__name__, exc
++                )
+                 last_error = exc
+                 continue
+ 
+@@ -105,6 +111,9 @@
+                         yield delta
+                 return
+             except Exception as exc:  # noqa: BLE001 - fallback chain by design
++                logger.warning(
++                    "LLM %s failed (%s: %s); trying next model", model, type(exc).__name__, exc
++                )
+                 last_error = exc
+                 continue
+ 
+--- a/.env.example	2026-10-19 14:16:37.000000000 +0300
++++ b/.env.example	2026-10-20 04:16:52.258672176 +0300
+@@ -13,6 +13,11 @@
+ MODELS_DIR=./models               # كاش HuggingFace؛ نزّله مرة: python scripts/data/download_models.py
+ HF_OFFLINE=true                   # بعد التحميل لا اتصال بـ HuggingFace (اجعله false في أول تشغيل لو لم تنزّل)
+ 
++# --- Logging ---
++LOG_LEVEL=INFO                    # DEBUG | INFO | WARNING | ERROR
++LOG_JSON=false                    # true => سطر JSON لكل رسالة
++LOG_FILE=data/logs/app.log        # فارغ => الشاشة فقط
++
+ # --- Rerank ---
+ RERANKER_ENABLED=true
+ VOYAGE_API_KEY=                   # مفتاحك أنت

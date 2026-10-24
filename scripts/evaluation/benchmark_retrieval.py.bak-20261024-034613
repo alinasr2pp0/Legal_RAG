@@ -1,0 +1,113 @@
+"""Benchmark BM25 / Dense / Hybrid(RRF) / Hybrid+Reranker on ONE dataset + golden set.
+Each mode that cannot run here (no model weights, no Qdrant) is reported as BLOCKED with
+the reason -- numbers are never estimated or copied from elsewhere.
+
+    python scripts/evaluation/benchmark_retrieval.py --output reports/retrieval_benchmark.json
+"""
+import argparse
+import hashlib
+import json
+from pathlib import Path
+
+from core.models import Chunk
+
+KS = (1, 3, 5, 10)
+
+
+def metrics(rankings: list[list[int]], golden: list[dict]) -> dict[str, float]:
+    n = len(golden)
+    hits = {k: 0 for k in KS}
+    rr = 0.0
+    for ranked, g in zip(rankings, golden, strict=True):
+        if g["expected_article"] in ranked:
+            r = ranked.index(g["expected_article"]) + 1
+            rr += 1 / r
+            for k in KS:
+                hits[k] += r <= k
+    return {**{f"hit@{k}": round(hits[k] / n, 4) for k in KS}, "mrr": round(rr / n, 4), "n": n}
+
+
+def dedupe(numbers: list[int], limit: int = 10) -> list[int]:
+    out: list[int] = []
+    for x in numbers:
+        if x not in out:
+            out.append(x)
+        if len(out) >= limit:
+            break
+    return out
+
+
+def run(chunks: list[Chunk], golden: list[dict]) -> dict[str, object]:
+    from rag.retrieval.sparse import BM25Index
+
+    result: dict[str, object] = {}
+    subsets = {
+        "all": golden,
+        "semantic_only": [g for g in golden if g.get("query_type") == "semantic"],
+    }
+    bm25 = BM25Index(chunks)
+    rankings = {
+        name: [dedupe([int(c.chunk.metadata["number"]) for c in bm25.search(g["question"], 30)])
+               for g in sub] for name, sub in subsets.items()
+    }
+    result["bm25"] = {name: metrics(rankings[name], sub) for name, sub in subsets.items()}
+
+    try:
+        from rag.indexing.factory import build_embedder, build_vector_store
+        from rag.reranking.reranker import VoyageReranker
+        from rag.retrieval.hybrid import HybridRetriever
+
+        embedder, store = build_embedder(), build_vector_store()
+        if store.count() != len(chunks):
+            raise RuntimeError(f"index has {store.count()} vectors, corpus {len(chunks)} chunks")
+        retriever = HybridRetriever(embedder, store, bm25)
+    except Exception as exc:  # noqa: BLE001
+        reason = f"{type(exc).__name__}: {str(exc)[:160]}"
+        for mode in ("dense", "hybrid_rrf", "hybrid_rerank"):
+            result[mode] = {"status": "BLOCKED", "reason": reason}
+        return result
+
+    def to_numbers(scored) -> list[int]:  # type: ignore[no-untyped-def]
+        return dedupe([int(c.chunk.metadata["number"]) for c in scored])
+
+    _voyage: list[VoyageReranker] = []
+
+    def voyage() -> VoyageReranker:
+        if not _voyage:
+            _voyage.append(VoyageReranker())
+        return _voyage[0]
+
+    for mode, fn in {
+        "dense": lambda q: store.query(embedder.embed_query(q), top_k=30),
+        "hybrid_rrf": lambda q: retriever.retrieve(q, 30),
+        # Voyage API: needs VOYAGE_API_KEY (paid calls); without it this mode is reported BLOCKED
+        "hybrid_rerank": lambda q: voyage().rerank(q, retriever.retrieve(q, 30), 10),
+    }.items():
+        try:
+            result[mode] = {
+                name: metrics([to_numbers(fn(g["question"])) for g in sub], sub)
+                for name, sub in subsets.items()
+            }
+        except Exception as exc:  # noqa: BLE001
+            result[mode] = {"status": "BLOCKED", "reason": f"{type(exc).__name__}: {exc}"[:200]}
+    return result
+
+
+if __name__ == "__main__":
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--chunks", default="data/serving/chunks.json")
+    ap.add_argument("--golden", default="data/eval/golden_set.json")
+    ap.add_argument("--output", default="")
+    args = ap.parse_args()
+    raw = Path(args.chunks).read_bytes()
+    chunks = [Chunk(**c) for c in json.loads(raw)]
+    golden = json.loads(Path(args.golden).read_text(encoding="utf-8"))
+    report = {
+        "chunks_sha256": hashlib.sha256(raw).hexdigest(),
+        "golden_labels_human_reviewed": sum(bool(g.get("reviewed_by_human")) for g in golden),
+        "results": run(chunks, golden),
+    }
+    print(json.dumps(report, ensure_ascii=False, indent=2))
+    if args.output:
+        Path(args.output).parent.mkdir(parents=True, exist_ok=True)
+        Path(args.output).write_text(json.dumps(report, ensure_ascii=False, indent=2))

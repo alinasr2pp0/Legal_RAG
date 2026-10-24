@@ -1,0 +1,55 @@
+stages:
+  parse:
+    cmd: python scripts/data/parse_pdf.py --input data/raw/civil_code.pdf --output data/interim/articles_raw.json
+    deps:
+      - scripts/data/parse_pdf.py
+      - data/raw/civil_code.pdf
+      - src/rag/ingestion/parser.py
+    outs:
+      - data/interim/articles_raw.json
+
+  validate_normalize:
+    cmd: python scripts/data/validate_and_normalize.py --input data/interim/articles_raw.json --output data/interim/articles_clean.json
+    deps:
+      - scripts/data/validate_and_normalize.py
+      - data/interim/articles_raw.json
+      - src/rag/ingestion/normalizer.py
+      - src/rag/ingestion/pdf_repair.py
+      - src/rag/ingestion/validator.py
+    outs:
+      - data/interim/articles_clean.json
+    metrics:
+      - data/interim/validation_report.json:
+          cache: false
+
+  chunk:
+    cmd: python scripts/data/chunk_articles.py --input data/interim/articles_clean.json --output data/processed/chunks.json
+    deps:
+      - scripts/data/chunk_articles.py
+      - data/interim/articles_clean.json
+      - src/rag/chunking/chunker.py
+    params:
+      - chunking.max_chars
+      - chunking.overlap_chars
+    outs:
+      - data/processed/chunks.json
+
+  embed_index:
+    cmd: python scripts/data/build_index.py --input data/processed/chunks.json
+    deps:
+      - scripts/data/build_index.py
+      - data/processed/chunks.json
+      - src/rag/embedding/embedder.py
+      - src/rag/indexing/vector_store.py
+    outs:
+      - data/processed/index_manifest.json
+
+  evaluate:
+    cmd: python scripts/evaluation/run_evaluation.py --dataset data/eval/golden_set.json --base-url http://localhost:8000
+    deps:
+      - scripts/evaluation/run_evaluation.py
+      - data/eval/golden_set.json
+      - src/rag/evaluation/ragas_runner.py
+    metrics:
+      - data/eval/ragas_scores.json:
+          cache: false

@@ -1,0 +1,37 @@
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights:  30%|##9       | 59/199 [00:00<00:00, 574.21it/s]Loading weights: 100%|##########| 199/199 [00:00<00:00, 1404.41it/s]
+D:\Documents\egyptian-civil-code-rag\src\rag\embedding\embedder.py:55: FutureWarning: The `get_sentence_embedding_dimension` method has been renamed to `get_embedding_dimension`.
+  return int(self.model.get_sentence_embedding_dimension())
+Traceback (most recent call last):
+  File "C:\Users\hp\AppData\Local\Programs\Python\Python310\lib\site-packages\portalocker\portalocker.py", line 223, in lock
+    msvcrt.locking(  # type: ignore[attr-defined]
+PermissionError: [Errno 13] Permission denied
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\hp\AppData\Local\Programs\Python\Python310\lib\site-packages\qdrant_client\local\qdrant_local.py", line 168, in _load
+    portalocker.lock(
+  File "C:\Users\hp\AppData\Local\Programs\Python\Python310\lib\site-packages\portalocker\portalocker.py", line 316, in lock
+    locker(file, flags)
+  File "C:\Users\hp\AppData\Local\Programs\Python\Python310\lib\site-packages\portalocker\portalocker.py", line 230, in lock
+    raise exceptions.AlreadyLocked(
+portalocker.exceptions.AlreadyLocked: (1, '[Errno 13] Permission denied')
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\Documents\egyptian-civil-code-rag\scripts\data\build_index.py", line 69, in <module>
+    main()
+  File "D:\Documents\egyptian-civil-code-rag\scripts\data\build_index.py", line 38, in main
+    store = build_vector_store()
+  File "D:\Documents\egyptian-civil-code-rag\src\rag\indexing\factory.py", line 44, in build_vector_store
+    return QdrantVectorStore()
+  File "D:\Documents\egyptian-civil-code-rag\src\rag\indexing\vector_store.py", line 54, in __init__
+    self.client = QdrantClient(path=path or settings.qdrant_path)
+  File "C:\Users\hp\AppData\Local\Programs\Python\Python310\lib\site-packages\qdrant_client\qdrant_client.py", line 127, in __init__
+    self._client = QdrantLocal(
+  File "C:\Users\hp\AppData\Local\Programs\Python\Python310\lib\site-packages\qdrant_client\local\qdrant_local.py", line 87, in __init__
+    self._load()
+  File "C:\Users\hp\AppData\Local\Programs\Python\Python310\lib\site-packages\qdrant_client\local\qdrant_local.py", line 173, in _load
+    raise RuntimeError(
+RuntimeError: Storage folder ./data/qdrant is already accessed by another instance of Qdrant client. If you require concurrent access, use Qdrant server instead.

@@ -1,0 +1,33 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+*.egg-info/
+dist/
+build/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.coverage
+coverage.xml
+
+# DVC-tracked data — real content lives in the DVC remote, not git
+/data/raw/*
+/data/interim/*
+/data/processed/*
+!/data/**/.gitkeep
+# small serving bundle + golden set ARE committed (Docker/CI need them)
+!/data/serving/
+!/data/eval/
+/data/eval/ragas_scores.json
+/data/eval/last_run_details.json
+/data/qdrant/
+
+mlruns/
+*.dvc.lock.bak
+/data/logs/
+models/
+/mlflow.db
+/monitoring/local/.grafana-provisioning/
+/data/grafana/
