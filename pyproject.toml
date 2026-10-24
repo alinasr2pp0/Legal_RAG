@@ -34,7 +34,7 @@ dependencies = [
 
 [project.optional-dependencies]
 # Opt-in only:
-tracing = ["langfuse>=2.44.0,<3"]                           # tracing.py uses the v2 client.trace() API
+tracing = ["langfuse>=2.44.0,<6"]                           # tracing.py uses the v2 client.trace() API
 loadtest = [
     "locust>=2.29.0",
 ]
