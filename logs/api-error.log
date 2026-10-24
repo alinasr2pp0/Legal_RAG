@@ -1,0 +1,7 @@
+INFO:     Started server process [11196]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|##########| 199/199 [00:00<00:00, 4630.01it/s]
+D:\Documents\egyptian-civil-code-rag\src\rag\embedding\embedder.py:55: FutureWarning: The `get_sentence_embedding_dimension` method has been renamed to `get_embedding_dimension`.
+  return int(self.model.get_sentence_embedding_dimension())
