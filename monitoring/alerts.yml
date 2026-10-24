@@ -1,0 +1,38 @@
+groups:
+  - name: civil-code-rag
+    rules:
+      - alert: FaithfulnessBelowThreshold
+        # Same threshold as settings.faithfulness_alert_threshold (0.80)
+        expr: rag_faithfulness_score < 0.80
+        for: 5m
+        labels: {severity: critical}
+        annotations:
+          summary: "RAGAS faithfulness {{ $value | printf \"%.2f\" }} < 0.80"
+      - alert: EmbeddingDriftHigh
+        # Same threshold as DriftDetector(alert_threshold=0.15)
+        expr: rag_embedding_drift_mmd > 0.15
+        for: 10m
+        labels: {severity: warning}
+        annotations:
+          summary: "Query-embedding MMD drift {{ $value | printf \"%.3f\" }} > 0.15"
+      - alert: EmbeddingDriftMoving
+        # drift changed by > 0.05 vs the rolling median of the last runs
+        expr: rag_embedding_drift_delta_alert == 1
+        for: 5m
+        labels: {severity: warning}
+        annotations:
+          summary: "Query-embedding drift is moving (delta vs rolling median > 0.05)"
+      - alert: CriticFailureRateHigh
+        expr: |
+          sum(rate(rag_critic_verdicts_total{verdict="failed"}[15m]))
+            / clamp_min(sum(rate(rag_critic_verdicts_total[15m])), 1e-9) > 0.2
+        for: 15m
+        labels: {severity: warning}
+        annotations:
+          summary: "More than 20% of answers fail the critic (ungrounded / uncited)"
+      - alert: HighP95Latency
+        expr: histogram_quantile(0.95, sum by (le) (rate(rag_query_latency_ms_bucket[5m]))) > 8000
+        for: 10m
+        labels: {severity: warning}
+        annotations:
+          summary: "p95 /ask latency above 8s"

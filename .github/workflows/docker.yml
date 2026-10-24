@@ -1,0 +1,104 @@
+name: Docker
+
+# Independent of CI so a Docker problem and a code problem are visible separately.
+#   * pull requests (and pushes without secrets): build the image + smoke-test it, never push.
+#   * pushes to main with the DOCKERHUB_USERNAME / DOCKERHUB_TOKEN repository secrets: also push
+#     <username>/civil-code-rag:latest and :<commit sha> to Docker Hub.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "Dockerfile"
+      - ".dockerignore"
+      - "src/**"
+      - "Frontend/**"
+      - "scripts/**"
+      - "data/serving/**"
+      - "config/**"
+      - "pyproject.toml"
+      - ".github/workflows/docker.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "Dockerfile"
+      - ".dockerignore"
+      - "src/**"
+      - "Frontend/**"
+      - "scripts/**"
+      - "data/serving/**"
+      - "config/**"
+      - "pyproject.toml"
+      - ".github/workflows/docker.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: docker-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build-test-push:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      # Pushing needs the secrets and must never happen for pull requests (forks have no secrets).
+      - name: Decide whether to push
+        id: plan
+        run: |
+          if [ "${{ github.event_name }}" != "pull_request" ] && [ -n "$DOCKERHUB_USERNAME" ]; then
+            echo "push=true" >> "$GITHUB_OUTPUT"
+            echo "image=${DOCKERHUB_USERNAME}/civil-code-rag" >> "$GITHUB_OUTPUT"
+          else
+            echo "push=false" >> "$GITHUB_OUTPUT"
+            echo "image=civil-code-rag" >> "$GITHUB_OUTPUT"
+            echo "::notice::Not pushing (pull request, or DOCKERHUB_USERNAME / DOCKERHUB_TOKEN secrets missing)."
+          fi
+
+      - name: Build image for the smoke test
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          load: true
+          push: false
+          tags: civil-code-rag:smoke
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Smoke test (/health and the UI)
+        run: |
+          docker run -d --name rag -p 8000:8000 civil-code-rag:smoke
+          ok=0
+          for i in $(seq 1 30); do
+            if curl -fs http://localhost:8000/health >/dev/null; then ok=1; break; fi
+            sleep 2
+          done
+          if [ "$ok" != "1" ]; then docker logs rag; exit 1; fi
+          curl -fs http://localhost:8000/health
+          curl -fs http://localhost:8000/ | grep -q "<html"
+          docker rm -f rag
+
+      - name: Log in to Docker Hub
+        if: steps.plan.outputs.push == 'true'
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Push to Docker Hub
+        if: steps.plan.outputs.push == 'true'
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ steps.plan.outputs.image }}:latest
+            ${{ steps.plan.outputs.image }}:${{ github.sha }}
+          cache-from: type=gha

@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>مساعد القانون المدني المصري</title>
+<style>
+:root{--bg:#f3f5f9;--cd:#fff;--tx:#16202f;--mu:#5b6678;--ln:#e0e5ed;--sb:#10213f;--sbt:#e4eaf5;--sbm:#9fb0cc;--pr:#14284b;--prt:#fff;--br:#8c5e12;--brs:#f7eddb;--bra:#c8963e;--ok:#13734a;--okb:#e5f4ec;--wn:#8a5a00;--wnb:#fff1d6;--er:#b3261e;--erb:#fdeceb;--ub:#1d3a6b;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+:root[data-theme=dark]{--bg:#0a121e;--cd:#111c2c;--tx:#e7ecf4;--mu:#9fabc0;--ln:#223048;--sb:#0d1727;--pr:#d4a65a;--prt:#1a1405;--br:#dbb06a;--brs:#2a2111;--ok:#4ade80;--okb:#10301d;--wn:#fbbf24;--wnb:#3a2c0b;--er:#f87171;--erb:#3b1517}
+[hidden]{display:none!important}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.8 "Segoe UI",Tahoma,system-ui,sans-serif}
+button,select,textarea{font:inherit;color:inherit}button{cursor:pointer}
+:focus-visible{outline:3px solid var(--bra);outline-offset:2px}
+.app{display:grid;grid-template-columns:252px minmax(0,1fr);min-height:100%}
+.sb{position:sticky;top:env(safe-area-inset-top,0px);align-self:start;height:100dvh;background:var(--sb);color:var(--sbt);display:flex;flex-direction:column;gap:24px;padding:22px 14px;z-index:6}
+.brand{display:flex;align-items:center;gap:12px;padding:0 6px}
+.mk{width:42px;height:42px;border-radius:12px;background:rgba(200,150,62,.16);display:grid;place-items:center;color:#e3b25f;flex:none}
+.mk svg{width:26px;height:26px}
+.brand b{display:block;font-size:17px;line-height:1.35}.brand small{color:var(--sbm);font-size:12px}
+.sb nav{display:flex;flex-direction:column;gap:4px}
+.sb nav a{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;color:var(--sbm);text-decoration:none;font-size:15px;position:relative}
+.sb nav a:hover{background:rgba(255,255,255,.06);color:var(--sbt)}
+.sb nav a[aria-current=page]{background:rgba(255,255,255,.1);color:#fff;font-weight:700}
+.sb nav a[aria-current=page]::before{content:"";position:absolute;inset-inline-start:-14px;top:10px;bottom:10px;width:4px;border-radius:0 4px 4px 0;background:#e3b25f}
+.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.sbf{margin-top:auto;display:flex;flex-direction:column;gap:10px}
+.sst{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.07);border-radius:10px;padding:8px 12px;font-size:13px}
+.dot{width:9px;height:9px;border-radius:50%;background:#4ade80;flex:none}[data-ok=false] .dot{background:#f87171}
+.th{display:flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.16);background:none;color:var(--sbt);border-radius:10px;padding:7px 12px;font-size:13px}
+.mn{max-width:920px;width:100%;box-sizing:border-box;margin:0 auto;padding:30px 28px 12px}
+.ph{display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px;justify-content:space-between;margin-bottom:22px;padding-bottom:16px;border-bottom:1px solid var(--ln)}
+.ph h1{margin:0;font-size:26px;line-height:1.4}.ph p{margin:0;color:var(--mu);font-size:14.5px}
+.acts{display:flex;gap:8px}
+.btn{border:1px solid var(--ln);background:var(--cd);border-radius:10px;padding:5px 14px;font-size:14px}
+.btn:hover{border-color:var(--bra)}.btn.dg{color:var(--er)}
+.empty{padding:6px 0 8px}
+.empty h2{font-size:19px;margin:0 0 4px}.empty>p{margin:0 0 16px;color:var(--mu);font-size:14.5px}
+.sg{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.sc{text-align:start;background:var(--cd);border:1px solid var(--ln);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:2px;border-inline-start:4px solid var(--bra)}
+.sc:hover{border-color:var(--bra);box-shadow:0 4px 14px -8px rgba(16,33,63,.4)}
+.sc small{color:var(--br);font-weight:700;font-size:12.5px}.sc span{font-size:15px}
+#log{display:flex;flex-direction:column;gap:18px}
+.m{overflow-wrap:anywhere}
+.m.u{align-self:flex-start;max-width:85%;background:var(--ub);color:#fff;padding:10px 18px;border-radius:16px 16px 4px 16px}
+.m.a{background:var(--cd);border:1px solid var(--ln);border-radius:16px;overflow:hidden;box-shadow:0 2px 10px -6px rgba(16,33,63,.35)}
+.ah{display:flex;align-items:center;gap:10px;padding:10px 20px;border-bottom:1px solid var(--ln);font-size:14px}
+.ah .mk{width:30px;height:30px;border-radius:9px;background:var(--brs);color:var(--br)}.ah .mk svg{width:18px;height:18px}
+.ah time{margin-inline-start:auto;color:var(--mu);font-size:12.5px}
+.ab{padding:16px 20px 18px;display:flex;flex-direction:column;gap:14px}
+.vf{display:grid;grid-template-columns:1fr auto;gap:2px 12px;align-items:center;border-radius:10px;padding:10px 14px}
+.vf.ok{background:var(--okb);color:var(--ok)}.vf.wn{background:var(--wnb);color:var(--wn)}
+.vf b{font-size:14.5px}.vf small{display:block;font-size:12.5px;opacity:.9}.pc{font-size:20px;font-weight:700;grid-row:span 1}
+.vf .mt{grid-column:1/-1;height:5px;border-radius:5px;background:rgba(127,127,127,.22);margin-top:6px;overflow:hidden}.mt i{display:block;height:100%;background:currentColor;border-radius:5px}
+.tx{white-space:pre-wrap;font-size:17px;line-height:2}
+.tx.live::after{content:"▍";color:var(--bra);animation:bl 1s steps(2) infinite}
+@keyframes bl{50%{opacity:0}}
+.rf h4{margin:0 0 8px;font-size:13.5px;color:var(--mu)}
+.refs{display:flex;flex-wrap:wrap;gap:8px}
+.ref{display:flex;align-items:center;gap:8px;border:1px solid var(--ln);background:var(--cd);border-radius:10px;padding:3px 4px 3px 12px;font-size:14px}
+.ref b{background:var(--brs);color:var(--br);border-radius:7px;padding:0 10px;min-width:38px;text-align:center}
+.ref:hover{border-color:var(--bra)}.ref.x{color:var(--mu)}.ref.x b{background:var(--ln);color:var(--mu)}
+.ban{border-radius:10px;padding:8px 14px;font-size:13.5px;background:var(--wnb);color:var(--wn)}.ban.in{background:var(--brs);color:var(--br)}
+.err{background:var(--erb);color:var(--er);border-radius:12px;padding:16px;text-align:center}
+.err b{display:block;font-size:16px}.err p{margin:2px 0 10px;color:var(--tx);font-size:14.5px}
+.rt{background:var(--er);color:#fff;border:0;border-radius:9px;padding:5px 20px}
+.mu{color:var(--mu);font-size:13.5px;margin:0}
+.dots{display:flex;gap:6px;padding:8px 0}.dots i{width:9px;height:9px;border-radius:50%;background:var(--bra);animation:bl 1s infinite}.dots i:nth-child(2){animation-delay:.2s}.dots i:nth-child(3){animation-delay:.4s}
+.comp{position:sticky;bottom:env(safe-area-inset-bottom,0px);margin-top:20px;background:var(--cd);border:1px solid var(--ln);border-radius:18px;padding:12px 14px;box-shadow:0 -10px 24px -14px rgba(16,33,63,.45)}
+.comp:focus-within{border-color:var(--bra)}
+textarea{width:100%;box-sizing:border-box;border:0;background:none;resize:none;min-height:56px;max-height:200px;font-size:16px;line-height:1.7}textarea:focus{outline:none}
+.cb{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-top:8px;border-top:1px solid var(--ln)}
+.seg{display:flex;background:var(--bg);border:1px solid var(--ln);border-radius:10px;padding:2px}
+.seg button{border:0;background:none;padding:2px 12px;border-radius:8px;font-size:13px;color:var(--mu)}
+.seg [aria-pressed=true]{background:var(--cd);color:var(--tx);font-weight:700;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+#cnt{margin-inline-start:auto;color:var(--mu);font-size:13px}#cnt.over{color:var(--er);font-weight:700}
+.pri,.dng{display:flex;align-items:center;gap:6px;border:0;border-radius:10px;padding:6px 20px;font-weight:700;background:var(--pr);color:var(--prt)}
+.dng{background:var(--er);color:#fff}.pri:disabled{opacity:.4;cursor:not-allowed}
+.wr{margin:8px 0 0;color:var(--er);font-size:13.5px}
+.cd{background:var(--cd);border:1px solid var(--ln);border-radius:14px;padding:16px 18px}
+.cd h3{margin:0 0 10px;font-size:16px}.cd p{margin:0}
+.li{display:flex;flex-direction:column;gap:10px}
+.it{width:100%;text-align:start;display:flex;align-items:center;gap:14px;cursor:pointer}
+.it:hover{border-color:var(--bra)}.it div{flex:1;min-width:0}.it b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.no{background:var(--brs);color:var(--br);border-radius:10px;min-width:48px;height:48px;display:grid;place-items:center;font-weight:700;font-size:17px;flex:none}
+.empt{text-align:center;color:var(--mu);padding:32px 12px}
+footer{text-align:center;color:var(--mu);font-size:13px;padding:14px 16px 28px}
+#ov{position:fixed;inset:0;background:rgba(5,10,25,.55);z-index:8}
+#dr{position:fixed;inset-block:0;inset-inline-start:0;width:min(430px,100%);box-sizing:border-box;background:var(--cd);z-index:9;padding:20px;padding-top:calc(20px + env(safe-area-inset-top,0px));box-shadow:0 0 36px rgba(0,0,0,.4);animation:sl .2s ease-out;overflow-y:auto}
+@keyframes sl{from{transform:translateX(100%)}}
+.dh{display:flex;align-items:center;gap:12px;margin-bottom:16px}.dh h2{margin:0;font-size:21px;flex:1}
+.ib{border:1px solid var(--ln);background:none;border-radius:9px;width:36px;height:36px}
+.tg{font-size:12.5px;padding:2px 12px;border-radius:999px;background:var(--okb);color:var(--ok);font-weight:700}.tg.x{background:var(--ln);color:var(--mu)}
+#dx{white-space:pre-wrap;font-size:18px;line-height:2.1;border-inline-start:4px solid var(--bra);padding-inline-start:14px;margin:18px 0}
+.tl{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:16px}
+.tile{background:var(--cd);border:1px solid var(--ln);border-radius:14px;padding:14px 16px}
+.tile small{display:block;color:var(--mu);font-size:13px}.tile b{display:block;font-size:28px;line-height:1.4}.tile span{font-size:12.5px;color:var(--mu)}
+.tile.ok b{color:var(--ok)}.tile.wn2 b{color:var(--wn)}
+.dg2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin-bottom:12px}
+.bars{display:flex;flex-direction:column;gap:10px;margin-top:6px}
+.br2{display:grid;grid-template-columns:130px 1fr 52px;align-items:center;gap:10px;font-size:14px}
+.br2 .tr{height:10px;border-radius:5px;background:var(--bg);overflow:hidden}.br2 .tr i{display:block;height:100%;border-radius:5px;background:var(--bra)}
+.br2 em{font-style:normal;color:var(--mu);text-align:end;font-size:13px}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:14px;margin-top:6px}.kv dt{color:var(--mu)}.kv dd{margin:0;overflow-wrap:anywhere}
+.spark{width:100%;height:64px;display:block;margin-top:6px}.spark rect{fill:var(--bra)}.spark rect:hover{fill:var(--pr)}
+.rs{display:flex;gap:8px;margin-bottom:14px}.rs input{flex:1;border:1px solid var(--ln);background:var(--cd);border-radius:10px;padding:6px 12px;font-size:15px}
+.fbk{display:flex;align-items:center;gap:8px;color:var(--mu);font-size:13px}.fbk button{border:1px solid var(--ln);background:var(--cd);border-radius:9px;padding:2px 12px;font-size:15px}.fbk button:hover{border-color:var(--bra)}
+.dz{display:block;border:2px dashed var(--ln);border-radius:14px;padding:22px 16px;text-align:center;cursor:pointer;color:var(--mu)}
+.dz:hover,.dz.on{border-color:var(--bra);color:var(--tx)}.dz input{display:none}
+.fl{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--ln);font-size:14.5px}.fl:first-of-type{border-top:0}
+.fl div{flex:1;min-width:0}.fl b{display:block;overflow-wrap:anywhere}.fl span{color:var(--mu);font-size:13px}
+.bd{font-size:12px;padding:1px 10px;border-radius:999px;background:var(--brs);color:var(--br);font-weight:700}
+.nt{border-radius:10px;padding:10px 14px;font-size:13.5px;background:var(--brs);color:var(--br);margin-bottom:12px}.nt.w{background:var(--wnb);color:var(--wn)}.nt.e{background:var(--erb);color:var(--er)}
+.cs summary{cursor:pointer;font-size:13.5px;color:var(--mu)}.cs blockquote{margin:8px 0 0;padding:6px 12px;border-inline-start:3px solid var(--bra);background:var(--bg);border-radius:6px;font-size:14px}.cs blockquote small{display:block;color:var(--mu)}
+.cp{width:auto;height:auto;padding:1px 10px;font-size:12.5px;color:var(--mu)}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}}
+@media(max-width:820px){
+ .app{grid-template-columns:1fr}
+ .sb{height:auto;flex-direction:row;align-items:center;gap:12px;padding:10px 16px}
+ .brand small,.th span,.sst span.t{display:none}.sbf{margin:0 0 0 0;margin-inline-start:auto;flex-direction:row;align-items:center}
+ .sb nav{position:fixed;inset-inline:0;bottom:0;flex-direction:row;justify-content:space-around;background:var(--sb);padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px));border-top:1px solid rgba(255,255,255,.1);z-index:7;gap:0}
+ .sb nav a{flex-direction:column;gap:0;font-size:11.5px;padding:4px 14px}.sb nav a[aria-current=page]::before{display:none}
+ .mn{padding:18px 16px 84px}.ph h1{font-size:22px}.comp{bottom:calc(62px + env(safe-area-inset-bottom,0px))}.m.u{max-width:94%}
+}
+:root{--bg:#eef1f6;--cd:#ffffff;--tx:#0b1220;--mu:#3a475c;--ln:#cfd7e3;--sb:#0f1f3d;--sbt:#ffffff;--sbm:#c3d0e8;--pr:#14284b;--prt:#fff;--br:#6e4708;--brs:#f6ead2;--bra:#b8862f;--ok:#0b6b43;--okb:#dcf2e6;--wn:#7a4d00;--wnb:#fff0cc;--er:#a8201a;--erb:#fde6e4;--ub:#14284b;--sh:0 10px 30px -14px rgba(15,31,61,.35);--ff-h:"Amiri","Traditional Arabic","Sakkal Majalla","Noto Naskh Arabic",Georgia,serif}
+:root[data-theme=dark]{--bg:#070d18;--cd:#0f1a2d;--tx:#ffffff;--mu:#d3dcec;--ln:#2b3b58;--sb:#050a14;--sbt:#ffffff;--sbm:#c3d0e8;--pr:#e2b665;--prt:#140f02;--br:#f0c677;--brs:#2d2310;--bra:#e2b665;--ok:#6ee79b;--okb:#0f3321;--wn:#ffd166;--wnb:#3d2d08;--er:#ff8a84;--erb:#431a1c;--ub:#1d3a6b;--sh:0 12px 34px -14px rgba(0,0,0,.8);color-scheme:dark}
+:root[data-theme=light]{color-scheme:light}
+body{font-family:"Segoe UI",Tahoma,system-ui,sans-serif;font-weight:600;letter-spacing:.1px;background:var(--bg);color:var(--tx);transition:background .25s,color .25s}
+:root[data-theme=dark] body{background:radial-gradient(1200px 520px at 80% -10%,#13244a 0%,transparent 60%),var(--bg)}
+:root:not([data-theme=dark]) body{background:radial-gradient(1200px 520px at 80% -10%,#fbf3e1 0%,transparent 55%),var(--bg)}
+h1,h2,h3,h4,b,strong,.pc,.no{font-weight:800}
+.ph h1,.empty h2,.dh h2{font-family:var(--ff-h);font-size:32px;font-weight:700;letter-spacing:0;background:linear-gradient(90deg,var(--tx),var(--br));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.empty h2{font-size:26px}.dh h2{font-size:26px}
+.ph{border-bottom:2px solid transparent;border-image:linear-gradient(90deg,var(--bra),transparent) 1}
+.brand b{font-family:var(--ff-h);font-size:21px;font-weight:700;color:#fff}
+.mk{background:linear-gradient(145deg,rgba(226,182,101,.35),rgba(226,182,101,.08));box-shadow:inset 0 0 0 1px rgba(226,182,101,.45)}
+.sb{background:linear-gradient(180deg,var(--sb),#0a1630);box-shadow:var(--sh)}
+:root[data-theme=dark] .sb{background:linear-gradient(180deg,#060c18,#0a1426);border-inline-end:1px solid var(--ln)}
+.sb nav a{font-weight:700;color:var(--sbm)}.sb nav a:hover,.sb nav a[aria-current=page]{color:#fff}
+.sb nav a[aria-current=page]{background:linear-gradient(90deg,rgba(226,182,101,.22),rgba(255,255,255,.05))}
+.cd,.tile,.m.a,.sc,.comp,.btn,.ref,#dr{box-shadow:var(--sh)}
+.m.a,.cd,.tile,.sc,.comp{border-radius:18px}
+.m.a{border-top:3px solid var(--bra)}
+.m.u{background:linear-gradient(135deg,#1d3a6b,#14284b);color:#fff;font-weight:700;box-shadow:var(--sh)}
+.tx,#dx{font-weight:600;color:var(--tx)}
+.tx{font-size:18px;line-height:2.05}
+.ah{background:linear-gradient(90deg,var(--brs),transparent)}
+.mu,.ph p,.empty>p,.rf h4,.ah time,.fbk,footer,.empt,.kv dt,.tile small,.tile span,.cs summary,#cnt,.br2 em,.fl span{color:var(--mu);font-weight:600}
+.sc small,.ref b,.no,.bd{color:var(--br);font-weight:800}
+.pri{background:linear-gradient(135deg,var(--pr),#2a4a82);color:var(--prt);box-shadow:0 8px 18px -10px rgba(20,40,75,.9)}
+:root[data-theme=dark] .pri{background:linear-gradient(135deg,#f0c677,#c8963e);color:#140f02}
+.pri:hover:not(:disabled){filter:brightness(1.08);transform:translateY(-1px)}
+.btn,.ref,.sc,.it{transition:border-color .2s,transform .2s,box-shadow .2s}
+.sc:hover,.it:hover{transform:translateY(-2px)}
+textarea::placeholder,.rs input::placeholder{color:var(--mu);opacity:.85}
+textarea,.rs input,select{color:var(--tx);font-weight:600}
+.seg{background:var(--bg)}.seg button{color:var(--mu);font-weight:700}.seg [aria-pressed=true]{color:var(--tx)}
+footer{padding-bottom:36px}
+.sb{box-sizing:border-box;overflow-y:auto}
+@media(max-width:820px){.sb{overflow:visible}}
+.thm{display:flex;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.22);border-radius:12px;padding:3px;gap:3px}
+.thm button{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;border:0;background:none;color:#e4ebf8;border-radius:9px;padding:6px 8px;font-size:13px;font-weight:800;white-space:nowrap}
+.thm button .i{width:16px;height:16px}
+.thm button:hover{background:rgba(255,255,255,.1)}
+.thm button[aria-pressed=true]{background:linear-gradient(135deg,#f0c677,#c8963e);color:#140f02;box-shadow:0 2px 8px -2px rgba(0,0,0,.5)}
+@media(max-width:820px){.thm button{padding:6px 8px;font-size:12px}.thm button .i{display:none}.brand b{font-size:15px}}
+.tabs{display:flex;gap:4px;margin-bottom:16px;border-bottom:1px solid var(--ln)}.tabs button{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;margin-bottom:-1px;border:0;border-bottom:3px solid transparent;background:none;color:var(--mu);font:inherit;font-weight:700;cursor:pointer}.tabs button[aria-selected=true]{color:var(--tx);border-bottom-color:#c49a52}
+:root[data-theme=light] #lg{color:#000;font-weight:800}@media(prefers-color-scheme:light){:root:not([data-theme=dark]) #lg{color:#000;font-weight:800}}
+</style></head><body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><symbol id="sc" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M24 8v32M14 40h20M8 16h32"/><path d="M8 16l-5 12a5 5 0 0010 0zM40 16l-5 12a5 5 0 0010 0z"/></symbol></defs></svg>
+<div class="app">
+<aside class="sb">
+ <div class="brand"><div class="mk"><svg><use href="#sc"/></svg></div><div><b>القانون المدني المصري</b><small>مساعد البحث القانوني</small></div></div>
+ <nav aria-label="التنقل الرئيسي">
+  <a href="#/chat" data-nav="chat"><svg class="i" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></svg>المحادثة</a>
+  <a href="#/case" data-nav="case"><svg class="i" viewBox="0 0 24 24"><path d="M4 7h16v12H4zM9 7V5h6v2M4 12h16"/></svg>القضية</a>
+  <a href="#/hist" data-nav="hist"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>السجل</a>
+  <a href="#/refs" data-nav="refs"><svg class="i" viewBox="0 0 24 24"><path d="M5 4h11a3 3 0 013 3v13H8a3 3 0 01-3-3zM5 17a3 3 0 013-3h11"/></svg>المراجع</a>
+ </nav>
+ <button type="button" class="btn" id="lg" style="margin:8px 12px;font-weight:700" aria-label="Switch to English">EN</button>
+ <div class="sbf"><div class="sst"><i class="dot"></i><span class="t" id="stt">جارٍ تحميل النماذج…</span></div><div class="thm" id="th" role="group" aria-label="وضع العرض"><button type="button" data-t="light" aria-pressed="false"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><span>وضع نهاري</span></button><button type="button" data-t="dark" aria-pressed="false"><svg class="i" viewBox="0 0 24 24"><path d="M20 14a8 8 0 01-10-10 8 8 0 1010 10z"/></svg><span>وضع ليلي</span></button></div></div>
+</aside>
+<div>
+<div class="mn">
+ <div class="ph"><div><h1 id="pt"></h1></div><div class="acts" id="acts"><button class="btn" id="nw">+ محادثة جديدة</button><button class="btn" id="ex">تصدير</button><button class="btn dg" id="cl">مسح السجل</button></div></div>
+ <section id="p-chat">
+  <div id="empty" class="empty"><h2>ابدأ بسؤالك</h2></div>
+  <div id="log" role="log" aria-live="polite"></div>
+  <div class="comp">
+   <textarea id="q" placeholder="اكتب سؤالك عن القانون المدني هنا…" aria-label="سؤالك"></textarea>
+   <label class="fbk" id="cc" hidden style="padding:2px 0 8px"><input type="checkbox" id="cu"> الإجابة من مستندات القضية: <b id="cn"></b></label>
+   <div class="cb"><button class="pri" id="send" disabled>إرسال</button><button class="dng" id="stop" hidden>إيقاف</button>
+   <span id="cnt">0/2000</span></div>
+   <p class="wr" id="warn" hidden></p>
+  </div>
+ </section>
+ <section id="p-case" hidden><div class="tabs" role="tablist"><button type="button" role="tab" data-ct="docs" aria-selected="true"><svg class="i" viewBox="0 0 24 24"><path d="M4 7h16v12H4zM9 7V5h6v2M4 12h16"/></svg>المستندات</button><button type="button" role="tab" data-ct="qa" aria-selected="false"><svg class="i" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4zM10 9.5a2 2 0 114 0c0 1.5-2 1.5-2 3M12 14.5h.01"/></svg>أسئلة القضية</button></div><div id="cv" class="empt">جارٍ التحميل…</div><div id="cqa" hidden></div></section>
+ <section id="p-hist" hidden><div class="li" id="hl"></div></section>
+ <section id="p-refs" hidden><form class="rs" id="rsf"><input id="rsn" type="search" placeholder="رقم المادة (1–1149) أو كلمات للبحث" aria-label="بحث في المواد"><button class="btn">بحث</button></form><div class="li" id="rs" style="margin-bottom:14px"></div><div class="li" id="rl"></div></section>
+</div>
+</div></div>
+<div id="ov" hidden></div>
+<aside id="dr" hidden role="dialog" aria-modal="true" aria-labelledby="dt"><div class="dh"><h2 id="dt"></h2><span class="tg" id="dv"></span><button class="ib" id="dc" aria-label="إغلاق">✕</button></div><p class="mu">القانون المدني المصري</p><p id="dx"></p></aside>
+<script>
+const Q=new URLSearchParams(location.search),API=Q.get('api')||(location.protocol=='file:'?'':''),TMO=180000;
+const $=s=>document.querySelector(s),E=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const ld=k=>{try{return JSON.parse(localStorage.getItem(k))}catch{return null}},sv=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch{}};
+const K='cc.cur',H='cc.hist',C='cc.art',TH='cc.theme';
+const CK='cc.case',UK='cc.cu';let CASE=ld(CK),USE=ld(UK)!==false,CAP=null;
+let msgs=(ld(K)||[]).filter(m=>m.state!='loading'),hist=ld(H)||[],ART=ld(C)||{},busy=false,ready=true,ctrl,info={},lastF;
+async function* sse(res){const r=res.body.getReader(),d=new TextDecoder();let b='';
+ for(;;){const{done,value}=await r.read();if(done)break;b+=d.decode(value,{stream:true});let i;
+  while((i=b.indexOf('\n\n'))>=0){const k=b.slice(0,i);b=b.slice(i+2);let ev='message',dt=[];
+   for(const l of k.split('\n')){if(l.startsWith('event:'))ev=l.slice(6).trim();else if(l.startsWith('data:'))dt.push(l.slice(5).replace(/^ /,''))}
+   yield{ev,data:dt.join('\n')}}}}
+const ER={503:['الخدمة غير متاحة مؤقتًا','تعذّر على النظام الإجابة حاليًا. حاول مرة أخرى بعد قليل.',1],422:['الرجاء إدخال سؤال صحيح','يجب أن يكون السؤال بين 1 و2000 حرف.',0],404:['القضية غير موجودة','لم يتم العثور على القضية أو انتهت صلاحيتها. أنشئ قضية جديدة وأعد رفع المستندات.',0],net:['تعذّر الاتصال بالخادم','تأكد من تشغيل الخادم المحلي ثم أعد المحاولة.',1],timeout:['انتهت المهلة','لم تصل الإجابة خلال 3 دقائق. أعد المحاولة أو تحقق من جاهزية النموذج.',1]};
+const PG={chat:'المحادثة القانونية',case:'ملفات القضية',hist:'سجل المحادثات',refs:'المراجع والمواد'};
+function mh(m,i){if(m.r=='u')return`<div class="m u">${E(m.text)}</div>`;
+ const tm=m.t?new Date(m.t).toLocaleTimeString(LOC(),{hour:'2-digit',minute:'2-digit'}):'';let b='';
+ if(m.state=='loading')b=`<div class="dots" role="status" aria-label="جارٍ إعداد الإجابة"><i></i><i></i><i></i></div><p class="mu">${E(m.progress||'جارٍ تجهيز الإجابة والتحقق من مصادرها…')} قد يستغرق إعداد الإجابة بعض الوقت.</p>`;
+ else{
+  if(m.critic&&m.state!='stream'){const c=m.critic,p=Math.round(c.grounding*100);
+   }
+  if(m.text)b+=`<div class="tx${m.state=='stream'?' live':''}">${E(m.text)}</div>`;
+  if(m.err){if(m.err=='stopped')b+='<p class="mu">تم إيقاف الإجابة.</p>';else{const e=ER[m.err]||ER.net;b+=`<div class="err" role="alert"><b>${e[0]}</b><p>${E(m.err==422&&m.detail?e[1]+' ('+m.detail+')':e[1])}</p>${m.err==503&&m.detail?`<p class="mu">${E(m.detail)}</p>`:''}${e[2]?`<button class="rt" data-retry="${i}">إعادة المحاولة</button>`:''}</div>`}}
+  if(m.sources?.length)b+=`<div class="rf"><h4>المراجع النظامية</h4><div class="refs">${m.sources.map(s=>{const n=s.article_number,g=ART[n]?.r;return`<button class="ref${g?' x':''}" data-art="${n}">المادة <b>${n}</b>${g?'<span class="mu">ملغاة</span>':''}</button>`}).join('')}</div></div>`;
+  if(m.case_sources?.length)b+=`<details class="cs"><summary>مقاطع من مستندات القضية (${m.case_sources.length})</summary>${m.case_sources.map(c=>`<blockquote><small>${E(c.doc)} · ص${c.page}</small>${E(c.snippet)}…</blockquote>`).join('')}</details>`;
+  if(m.text&&m.state=='done'&&!m.err)b+=m.fb?`<div class="fbk">${m.fb=='up'?'👍':'👎'} شكرًا لتقييمك.</div>`:`<div class="fbk">هل كانت الإجابة مفيدة؟<button data-fb="up" data-i="${i}" aria-label="مفيدة">👍</button><button data-fb="down" data-i="${i}" aria-label="غير مفيدة">👎</button></div>`;
+  if(m.used_web_search)b+='<div class="ban">جزء من الإجابة من مصدر ويب غير رسمي.</div>';
+  if(m.pii_redacted?.length)b+=`<div class="ban in">تم إخفاء بيانات شخصية من سؤالك (${E(m.pii_redacted.join('، '))}).</div>`}
+ return`<article class="m a"><div class="ah"><div class="mk"><svg><use href="#sc"/></svg></div><b>المساعد القانوني</b><time>${tm}</time>${m.text&&m.state=='done'?`<button class="ib cp" data-copy="${i}">نسخ</button>`:''}</div><div class="ab">${b}</div></article>`}
+const atBottom=()=>$('#log').lastElementChild?.scrollIntoView({block:'end'});
+function render(){$('#empty').hidden=msgs.length>0;$('#log').innerHTML=msgs.map(mh).join('');$('#stop').hidden=!busy;upd();if(page()=='chat')atBottom()}
+function upd(){const v=$('#q').value.trim(),n=$('#q').value.length;$('#cnt').textContent=n+'/2000';$('#cnt').className=n>2000?'over':'';$('#send').disabled=busy||!ready||!v||n>2000}
+function paint(){document.documentElement.dataset.ok=ready;$('#stt').textContent=ready?'النظام جاهز':'النظام غير متاح';$('#warn').hidden=ready;$('#warn').textContent='الإرسال معطّل: '+(info.detail||'');upd()}
+async function poll(){try{const r=await fetch(API+'/ready',{signal:AbortSignal.timeout?.(120000)});info=await r.json().catch(()=>({}));ready=r.ok}catch{ready=false;info={detail:'تعذّر الاتصال بالخادم'}}paint();setTimeout(poll,ready?30000:5000)}
+async function go(q){q=(q??$('#q').value).trim();if(!q||q.length>2000||busy||!ready)return;
+ const m={r:'a',text:'',state:'loading',t:Date.now()};msgs.push({r:'u',text:q},m);$('#q').value='';busy=true;ctrl=new AbortController();
+ let to=0;const tm=setTimeout(()=>{to=1;ctrl.abort()},TMO);location.hash='#/chat';render();
+ try{const res=await fetch(API+'/ask/stream',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:q,case_id:caseOn()?CASE.id:null}),signal:ctrl.signal});
+  if(!res.ok){m.err=res.status;if(res.status==404&&caseOn()){CASE=null;USE=false;sv(CK,null);sv(UK,USE);updCase()}const d=(await res.json().catch(()=>({}))).detail;m.detail=typeof d=='string'?d:''}
+  else{for await(const{ev,data}of sse(res)){
+   if(ev=='status'){m.progress='جارٍ البحث في مواد القانون…';render();continue}
+   if(ev=='error'){const e=JSON.parse(data);m.err=e.status;m.detail=typeof e.detail=='string'?e.detail:'';m.text='';if(e.status==404&&caseOn()){CASE=null;USE=false;sv(CK,null);sv(UK,USE);updCase()}break}
+   if(ev=='result'){const{answer,...rest}=JSON.parse(data);if(m.state!='stream'&&answer)await reveal(m,answer,ctrl.signal);Object.assign(m,rest);if(!ctrl.signal.aborted)m.text=answer;continue}
+   if(m.state!='stream'){m.state='stream';m.text+=data;render()}else{m.text+=data;liveUpd(m)}}}
+ }catch(e){m.err=e.name=='AbortError'?(to?'timeout':'stopped'):'net'}
+ clearTimeout(tm);busy=false;m.state='done';sv(K,msgs);render();prefetch(m.sources).then(()=>render())}
+function liveUpd(m){const el=document.querySelector('#log .tx.live');if(!el){render();return}el.textContent=m.text;if(page()=='chat')atBottom()}
+async function reveal(m,full,sig){const w=full.split(/(\s+)/);m.text='';m.state='stream';render();for(let i=0;i<w.length&&!sig.aborted;i+=4){m.text+=w.slice(i,i+4).join('');liveUpd(m);await new Promise(r=>setTimeout(r,40))}if(!sig.aborted)m.text=full}
+async function prefetch(list){await Promise.all((list||[]).map(s=>s.article_number).filter(n=>!ART[n]).map(async n=>{try{const r=await fetch(API+'/article/'+n);if(!r.ok)return;const j=await r.json();ART[n]={t:j.text,r:j.is_repealed,c:j.chapter,m:j.text_missing,i:j.text_incomplete}}catch{}}));sv(C,ART)}
+async function openArt(n){lastF=document.activeElement;$('#dt').textContent='المادة '+n;$('#dx').textContent='جارٍ التحميل…';$('#dv').textContent='';$('#dv').className='tg x';$('#ov').hidden=$('#dr').hidden=false;$('#dc').focus();
+ if(!ART[n])await prefetch([{article_number:+n}]);const a=ART[n];
+ $('#dx').textContent=a?((a.m?'⚠️ نص هذه المادة غير متوفر في المصدر.\n':a.i?'⚠️ نص هذه المادة ناقص في المصدر (الفقرة (1) بالعربية غير متوفرة).\n':'')+(a.r?'هذه المادة ملغاة.\n'+a.t:a.t)):'تعذّر تحميل نص المادة. تأكد من تشغيل الخادم.';
+ $('#dv').textContent=a?(a.r?'ملغاة':'سارية'):'غير معروفة';$('#dv').className='tg'+(a&&!a.r?'':' x')}
+function closeArt(){$('#ov').hidden=$('#dr').hidden=true;lastF?.focus()}
+let dTimer=0;const pc=v=>Math.round((v||0)*100)+'%',ms=v=>v>=1000?(v/1000).toFixed(1)+' ث':v+' م.ث';
+function dash(j){const L=j.latency_ms||{},S=j.system||{},Cp=j.corpus||{},bar=(a,v)=>`<div class="br2"><span>${a}</span><div class="tr" role="img" aria-label="${a} ${pc(v)}"><i style="width:${Math.min(100,Math.round(v*100))}%"></i></div><em>${pc(v)}</em></div>`;
+ const mx=Math.max(1,...(j.top_articles||[]).map(x=>x.count)),lt=j.recent_latency_ms||[],lm=Math.max(1,...lt);
+ const pass=j.critic_pass_rate;
+ $('#dh').className='';$('#dh').innerHTML=`<div class="tl">
+ <div class="tile"><small>إجمالي الطلبات</small><b>${j.total_requests}</b><span>منذ التشغيل · مدة ${Math.round(j.uptime_seconds/60)} دقيقة</span></div>
+ <div class="tile ${pass>=.8?'ok':'wn2'}"><small>نجاح المراجِع</small><b>${pc(pass)}</b><span>${pass>=.8?'جيد':'أقل من الحد 80%'}</span></div>
+ <div class="tile ${(j.avg_grounding||0)>=.8?'ok':'wn2'}"><small>متوسط الاستناد للنص</small><b>${j.avg_grounding==null?'—':pc(j.avg_grounding)}</b><span>الحد الأدنى 80%</span></div>
+ <div class="tile ${(j.feedback?.up+j.feedback?.down)?(j.feedback.positive_rate>=.7?'ok':'wn2'):''}"><small>رضا المستخدمين</small><b>${(j.feedback?.up+j.feedback?.down)?pc(j.feedback.positive_rate):'—'}</b><span>👍 ${j.feedback?.up||0} · 👎 ${j.feedback?.down||0}</span></div>
+ <div class="tile"><small>زمن الاستجابة (وسيط)</small><b>${ms(L.p50)}</b><span>p95: ${ms(L.p95)} · أعلى: ${ms(L.max)}</span></div></div>
+ <div class="dg2"><div class="cd"><h3>مؤشرات الجودة والاستخدام</h3><div class="bars">${bar('مراجعات مطلوبة',j.revision_rate)}${bar('رفض (خارج النطاق)',j.refusal_rate)}${bar('ذكر مادة صراحةً',j.explicit_article_rate)}${bar('إصابة الـ cache',j.cache_hit_rate)}${bar('بيانات شخصية',j.pii_rate)}${bar('اللجوء للويب',j.web_fallback_rate)}</div></div>
+ <div class="cd"><h3>أكثر المواد استشهادًا</h3><div class="bars">${(j.top_articles||[]).map(x=>`<div class="br2"><span>المادة ${x.article_number}</span><div class="tr"><i style="width:${Math.round(x.count/mx*100)}%"></i></div><em>${x.count}</em></div>`).join('')||'<p class="mu">لا بيانات بعد.</p>'}</div></div></div>
+ <div class="cd" style="margin-bottom:12px"><h3>زمن آخر ${lt.length} طلبًا</h3>${lt.length?`<svg class="spark" viewBox="0 0 300 60" preserveAspectRatio="none" role="img" aria-label="زمن الاستجابة لآخر الطلبات">${lt.map((v,k)=>`<rect x="${k*10+1}" y="${60-Math.max(2,v/lm*58)}" width="8" height="${Math.max(2,v/lm*58)}" rx="2"><title>${ms(v)}</title></rect>`).join('')}</svg>`:'<p class="mu">لا بيانات بعد.</p>'}</div>
+ <div class="dg2"><div class="cd"><h3>حالة النظام</h3><dl class="kv"><dt>الوضع</dt><dd>${S.local_only?'محلي بالكامل (LOCAL_ONLY)':'مختلط'} · ${E(S.profile)}</dd><dt>النموذج اللغوي</dt><dd>${E(S.llm)}</dd><dt>Embeddings</dt><dd>${E(S.embedding)}</dd><dt>قاعدة المتجهات</dt><dd>${E(S.vector_store)}</dd><dt>Reranker</dt><dd>${E(S.reranker)} (${E(S.reranker_model)})</dd><dt>بحث الويب</dt><dd>${S.web_search?'مفعّل':'معطّل'}</dd><dt>الـ pipeline</dt><dd>${S.pipeline_loaded?'محمَّل':'لم يُحمَّل بعد (أول سؤال)'}</dd></dl></div>
+ <div class="cd"><h3>المحتوى والذاكرة المؤقتة</h3><dl class="kv"><dt>المواد</dt><dd>${Cp.articles||'—'} (منها ملغاة: ${Cp.repealed??'—'})</dd><dt>المقاطع</dt><dd>${Cp.chunks||'—'}</dd><dt>cache الإجابات</dt><dd>${j.cache?.answer?.entries??0} عنصر · ${pc(j.cache?.answer?.hit_rate)}</dd><dt>cache الـ embeddings</dt><dd>${j.cache?.embedding?.entries??0} عنصر · ${pc(j.cache?.embedding?.hit_rate)}</dd></dl></div></div>`}
+async function loadDash(){try{const r=await fetch(API+'/stats');if(!r.ok)throw 0;dash(await r.json())}catch{$('#dh').className='empt';$('#dh').textContent='تعذّر تحميل المؤشرات. تأكد من تشغيل الخادم.'}}
+const caseOn=()=>!!(CASE&&CASE.docs.length&&USE);
+function updCase(){const on=!!(CASE&&CASE.docs.length);$('#cc').hidden=!on;if(on){$('#cn').textContent=CASE.name+' · '+CASE.docs.length+' مستند';$('#cu').checked=USE}}
+const fsz=n=>n>=1000?Math.round(n/1000)+' ألف حرف':n+' حرف';
+async function api(path,o={}){const r=await fetch(API+path,o);const j=r.status==204?{}:await r.json().catch(()=>({}));return{ok:r.ok,status:r.status,j}}
+async function loadCase(){if(!CAP){try{CAP=(await api('/cases/capabilities')).j}catch{CAP=null}}
+ if(CASE){const r=await api('/cases/'+CASE.id).catch(()=>null);if(r&&r.status==404){CASE=null;sv(CK,null)}else if(r&&r.ok){CASE.docs=r.j.docs;sv(CK,CASE)}}
+ caseView();updCase()}
+function caseView(note){const v=$('#cv');v.className='';
+ if(!CAP||!CAP.enabled){v.className='empt';v.textContent=CAP?'ميزة ملفات القضية معطّلة (CASE_UPLOAD_ENABLED=false).':'تعذّر الاتصال بالخادم.';return}
+ if(!CASE){v.innerHTML=`<form class="rs" id="cf"><input id="cnm" maxlength="80" placeholder="اسم القضية (مثال: نزاع إيجار)" aria-label="اسم القضية"><button class="btn">إنشاء قضية</button></form>`;
+  $('#cf').onsubmit=async e=>{e.preventDefault();const r=await api('/cases',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:$('#cnm').value})}).catch(()=>null);
+   if(r&&r.ok){CASE=r.j;sv(CK,CASE);caseView();updCase()}else caseView('تعذّر إنشاء القضية.')};return}
+ const n=CASE.docs.length;
+ v.innerHTML=(note?`<div class="nt e" role="alert">${note}</div>`:'')+`<div class="cd" style="margin-bottom:12px"><h3>${E(CASE.name)}</h3>
+ <label class="dz" id="dz"><input type="file" id="fi" multiple accept="${(CAP.extensions||[]).join(',')}">اسحب الملفات هنا أو اضغط للاختيار<br><span class="mu">${(CAP.extensions||[]).join(' ')} · حتى ${CAP.max_file_mb}MB للملف · ${CAP.max_docs} مستندات</span></label>
+ <p class="mu" id="cst" role="status" style="margin-top:8px"></p>
+ <div>${n?CASE.docs.map(d=>`<div class="fl"><div><b>${E(d.filename)}</b><span>${d.pages} صفحة · ${fsz(d.chars)}${d.skipped?` · حُذف ${d.skipped} سطر يشبه تعليمات`:''}</span></div><button class="btn dg" data-rm="${d.id}">حذف</button></div>`).join(''):'<p class="empt">لم تُرفع مستندات بعد.</p>'}</div></div>
+ <div class="acts" style="margin-top:12px"><button class="btn" id="cgo" ${n?'':'hidden'}>اسأل عن المستندات</button><button class="btn dg" id="cdel">حذف القضية وكل مستنداتها</button></div>`;
+ const dz=$('#dz');['dragenter','dragover'].forEach(t=>dz.addEventListener(t,e=>{e.preventDefault();dz.classList.add('on')}));['dragleave','drop'].forEach(t=>dz.addEventListener(t,e=>{e.preventDefault();dz.classList.remove('on')}));
+ dz.addEventListener('drop',e=>upFiles([...e.dataTransfer.files]));$('#fi').onchange=e=>{upFiles([...e.target.files]);e.target.value=''};
+ $('#cgo').onclick=()=>{location.hash='#/chat';$('#q').focus()};
+ v.onclick=async e=>{const b=e.target.closest('[data-rm]');if(!b)return;await api('/cases/'+CASE.id+'/documents/'+b.dataset.rm,{method:'DELETE'}).catch(()=>{});CASE.docs=CASE.docs.filter(d=>d.id!=b.dataset.rm);sv(CK,CASE);caseView();updCase()};
+ $('#cdel').onclick=async e=>{const b=e.currentTarget;if(!b.dataset.c){b.dataset.c=1;b.textContent='تأكيد الحذف؟';setTimeout(()=>{b.textContent='حذف القضية وكل مستنداتها';delete b.dataset.c},3000);return}
+  await api('/cases/'+CASE.id,{method:'DELETE'}).catch(()=>{});CASE=null;sv(CK,null);caseView();updCase()}}
+async function upFiles(files){const notes=[];const st=()=>$('#cst');
+ for(const f of files){if(!CASE)break;if(st())st().textContent='جارٍ رفع ومعالجة «'+f.name+'»…';
+  try{const r=await api('/cases/'+CASE.id+'/documents',{method:'POST',headers:{'X-Filename':encodeURIComponent(f.name)},body:f});
+   if(r.ok){CASE.docs.push(r.j);USE=true;sv(CK,CASE);sv(UK,USE)}else{notes.push(E(f.name)+': '+E(typeof r.j.detail=='string'?r.j.detail:Array.isArray(r.j.detail)?'طلب غير صالح':'فشل الرفع'));if(r.status==404){CASE=null;sv(CK,null);break}}}
+  catch{notes.push(E(f.name)+': تعذّر الاتصال بالخادم')}}
+ caseView(notes.join('<br>'));updCase()}
+
+const EN={"مساعد القانون المدني المصري": "Egyptian Civil Code Assistant", "القانون المدني المصري": "Egyptian Civil Code", "مساعد البحث القانوني": "Legal research assistant", "التنقل الرئيسي": "Main navigation", "المحادثة": "Chat", "القضية": "Case", "السجل": "History", "المراجع": "References", "جارٍ تحميل النماذج…": "Loading models…", "وضع العرض": "Display mode", "وضع نهاري": "Light", "وضع ليلي": "Dark", "محادثة جديدة": "New chat", "تصدير": "Export", "مسح السجل": "Clear history", "ابدأ بسؤالك": "Start with your question", "اكتب سؤالك عن القانون المدني هنا…": "Type your question about the Civil Code here…", "سؤالك": "Your question", "الإجابة من مستندات القضية:": "Answer from case documents:", "إرسال": "Send", "إيقاف": "Stop", "جارٍ التحميل…": "Loading…", "رقم المادة (1–1149) أو كلمات للبحث": "Article number (1–1149) or search words", "بحث في المواد": "Search articles", "بحث": "Search", "إغلاق": "Close", "المادة": "Article", "ملغاة": "Repealed", "المادة غير موجودة": "Article not found", "طول السؤال غير صالح": "Invalid question length", "الخدمة غير متاحة مؤقتًا": "Service temporarily unavailable", "تعذّر على النظام الإجابة حاليًا. حاول مرة أخرى بعد قليل": "The system can't answer right now. Please try again shortly", "الرجاء إدخال سؤال صحيح": "Please enter a valid question", "يجب أن يكون السؤال بين 1 و2000 حرف": "The question must be between 1 and 2000 characters", "القضية غير موجودة": "Case not found", "لم يتم العثور على القضية أو انتهت صلاحيتها. أنشئ قضية جديدة وأعد رفع المستندات": "The case was not found or has expired. Create a new case and re-upload the documents", "تعذّر الاتصال بالخادم": "Could not connect to the server", "تأكد من تشغيل الخادم المحلي ثم أعد المحاولة": "Make sure the local server is running and try again", "انتهت المهلة": "Timed out", "لم تصل الإجابة خلال 3 دقائق. أعد المحاولة أو تحقق من جاهزية النموذج": "No answer arrived within 3 minutes. Retry or check that the model is ready", "النظام غير جاهز: نموذج اللغة لم يُحمَّل بعد": "System not ready: the language model hasn't loaded yet", "المحادثة القانونية": "Legal chat", "ملفات القضية": "Case files", "سجل المحادثات": "Chat history", "المراجع والمواد": "References & articles", "جارٍ إعداد الإجابة": "Preparing the answer", "جارٍ تجهيز الإجابة والتحقق من مصادرها…": "Preparing the answer and verifying its sources…", "قد يستغرق إعداد الإجابة بعض الوقت.": "Preparing the answer may take a while.", "تم إيقاف الإجابة": "Answer stopped", "إعادة المحاولة": "Retry", "المراجع النظامية": "Legal references", "مقاطع من مستندات القضية": "Excerpts from case documents", "شكرًا لتقييمك": "Thanks for your feedback", "هل كانت الإجابة مفيدة؟": "Was the answer helpful?", "مفيدة": "Helpful", "غير مفيدة": "Not helpful", "جزء من الإجابة من مصدر ويب غير رسمي": "Part of the answer comes from an unofficial web source", "تم إخفاء بيانات شخصية من سؤالك": "Personal data was redacted from your question", "المساعد القانوني": "Legal assistant", "نسخ": "Copy", "تم النسخ": "Copied", "النظام جاهز": "System ready", "النظام غير متاح": "System unavailable", "الإرسال معطّل:": "Sending disabled:", "جارٍ البحث في مواد القانون…": "Searching the law's articles…", "نص هذه المادة غير متوفر في المصدر": "This article's text is not available in the source", "هذه المادة ملغاة": "This article is repealed", "تعذّر تحميل نص المادة. تأكد من تشغيل الخادم": "Could not load the article text. Make sure the server is running", "سارية": "In force", "غير معروفة": "Unknown", "تعذّر تحميل المؤشرات. تأكد من تشغيل الخادم": "Could not load metrics. Make sure the server is running", "ميزة ملفات القضية معطّلة": "The case files feature is disabled", "اسم القضية (مثال: نزاع إيجار)": "Case name (e.g. rent dispute)", "اسم القضية": "Case name", "إنشاء قضية": "Create case", "تعذّر إنشاء القضية": "Could not create the case", "اسحب الملفات هنا أو اضغط للاختيار": "Drag files here or click to choose", "لم تُرفع مستندات بعد": "No documents uploaded yet", "اسأل عن المستندات": "Ask about the documents", "حذف القضية وكل مستنداتها": "Delete the case and all its documents", "تأكيد الحذف؟": "Confirm deletion?", "طلب غير صالح": "Invalid request", "فشل الرفع": "Upload failed", "حذف": "Delete", "استعادة": "Restore", "لا توجد محادثات سابقة بعد. ستظهر هنا عند بدء محادثة جديدة": "No previous chats yet. They will appear here once you start a new chat", "لم تُستخدم أي مواد بعد. ستظهر هنا المواد التي تُذكر في الإجابات": "No articles used yet. Articles cited in answers will appear here", "جارٍ البحث…": "Searching…", "لا نتائج مطابقة": "No matching results", "تعذّر البحث. تأكد من تشغيل الخادم": "Search failed. Make sure the server is running", "السؤال": "Question", "الإجابة": "Answer", "المواد:": "Articles:", "تأكيد المسح؟": "Confirm clearing?", "المستندات": "Documents", "أسئلة القضية": "Case Q&A", "أنشئ قضية وارفع مستنداتها أولًا لتظهر هنا الأسئلة وأجوبتها.": "Create a case and upload its documents first; questions and answers will appear here.", "لا توجد أسئلة عن القضية بعد. اسأل من المحادثة وستظهر الإجابات هنا.": "No case questions yet. Ask from the chat and the answers will appear here.", "اسأل عن القضية": "Ask about the case"},RX=[[/ص(\d+)/g,'p.$1'],[/(\d+) صفحة/g,'$1 pages'],[/(\d+) مستندات/g,'$1 docs'],[/حتى (\d+)MB للملف/g,'up to $1MB per file'],[/جارٍ رفع ومعالجة «(.*)»…/g,'Uploading and processing “$1”…'],[/حُذف (\d+) سطر يشبه تعليمات/g,'$1 instruction-like lines removed']],KS=Object.keys(EN).filter(k=>k.length>3).sort((a,b)=>b.length-a.length),AR=/[\u0600-\u06FF]/;
+let LG=(()=>{try{return localStorage.getItem('lang')||'ar'}catch{return'ar'}})(),CTAB='docs';
+const LOC=()=>LG=='en'?'en-US':'ar-EG',TA=['placeholder','aria-label','title'],OR=new WeakMap();
+function tr(v){let s=v;for(const r of RX)s=s.replace(r[0],r[1]);const t=s.trim();if(EN[t]!==undefined)return s.replace(t,EN[t]);for(const k of KS)if(s.includes(k))s=s.split(k).join(EN[k]);return s}
+function fx(n){if(n.nodeType==3){const v=n.nodeValue,o=OR.get(n);if(o&&v===o.en){if(LG=='ar'){n.nodeValue=o.ar;OR.delete(n)}return}OR.delete(n);if(LG!='en'||!AR.test(v)||n.parentElement?.closest('#lg,script,style,.tx,.ntr,.m.u,blockquote,#dx'))return;const e=tr(v);if(e!==v){OR.set(n,{ar:v,en:e});n.nodeValue=e}}
+ else if(n.nodeType==1){if(n.closest('#lg'))return;for(const a of TA){if(!n.hasAttribute(a))continue;const v=n.getAttribute(a),k='data-ar-'+a,o=n.getAttribute(k);if(o!==null&&v===tr(o)){if(LG=='ar'){n.setAttribute(a,o);n.removeAttribute(k)}continue}if(LG=='en'&&AR.test(v)){n.setAttribute(k,v);n.setAttribute(a,tr(v))}else if(o!==null)n.removeAttribute(k)}}}
+function walk(r){fx(r);const w=document.createTreeWalker(r,5);let n;while(n=w.nextNode())fx(n)}
+const LO=new MutationObserver(ms=>{for(const m of ms){if(m.type=='childList')m.addedNodes.forEach(walk);else if(m.type=='characterData')fx(m.target);else fx(m.target)}LO.takeRecords()});
+function applyLang(){const h=document.documentElement;h.lang=LG;h.dir=LG=='en'?'ltr':'rtl';$('#lg').textContent=LG=='en'?'AR':'EN';$('#lg').setAttribute('aria-label',LG=='en'?'التبديل إلى العربية':'Switch to English');LO.disconnect();walk(document.body);document.title=LG=='en'?'Egyptian Civil Code Assistant':'مساعد القانون المدني المصري';LO.observe(document.body,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:TA});LO.takeRecords()}
+$('#lg').onclick=()=>{LG=LG=='en'?'ar':'en';try{localStorage.setItem('lang',LG)}catch{}applyLang();try{render();route()}catch{}};
+function pairs(a){const o=[];(a||[]).forEach((m,i)=>{if(m.r=='a'&&m.case_sources?.length&&m.text&&a[i-1]?.r=='u')o.push([a[i-1].text,m])});return o.reverse()}
+function caseQA(){const v=$('#cqa');const all=[...pairs(msgs),...hist.flatMap(h=>pairs(h.m))];
+ const go2=`<div class="acts" style="margin-top:12px"><button class="btn" id="qgo" ${CASE?'':'hidden'}>اسأل عن القضية</button></div>`;
+ if(!CASE){v.innerHTML='<p class="empt">أنشئ قضية وارفع مستنداتها أولًا لتظهر هنا الأسئلة وأجوبتها.</p>';return}
+ v.innerHTML=(all.length?all.map(([q,m])=>`<div class="cd" style="margin-bottom:12px"><small class="mu">السؤال</small><h3 class="ntr">${E(q)}</h3><small class="mu">الإجابة</small><div class="tx">${E(m.text)}</div><details class="cs"><summary>مقاطع من مستندات القضية (${m.case_sources.length})</summary>${m.case_sources.map(c=>`<blockquote><small>${E(c.doc)} · ص${c.page}</small>${E(c.snippet)}…</blockquote>`).join('')}</details></div>`).join(''):'<p class="empt">لا توجد أسئلة عن القضية بعد. اسأل من المحادثة وستظهر الإجابات هنا.</p>')+go2;
+ $('#qgo').onclick=()=>{USE=true;sv(UK,USE);updCase();location.hash='#/chat';$('#q').focus()}}
+function ctab(k){CTAB=k;$('#cv').hidden=k!='docs';$('#cqa').hidden=k!='qa';document.querySelectorAll('[data-ct]').forEach(b=>b.setAttribute('aria-selected',b.dataset.ct==k));if(k=='qa')caseQA()}
+document.querySelector('.tabs').onclick=e=>{const b=e.target.closest('[data-ct]');if(b)ctab(b.dataset.ct)};
+$('#cu').onchange=e=>{USE=e.target.checked;sv(UK,USE)};
+const page=()=>location.hash.replace('#/','')||'chat';
+function archive(){if(msgs.length){hist.unshift({t:Date.now(),m:msgs});hist=hist.slice(0,20);sv(H,hist)}}
+function route(){let p=page();if(!PG[p])p='chat';clearInterval(dTimer);if(p=='case'){loadCase();ctab(CTAB)}if(p=='dash'){loadDash();dTimer=setInterval(loadDash,10000)}Object.keys(PG).forEach(x=>{$('#p-'+x).hidden=x!=p;$('[data-nav='+x+']').setAttribute('aria-current',x==p?'page':'false')});
+ $('#pt').textContent=PG[p];$('#acts').hidden=p!='chat';
+ if(p=='hist')$('#hl').innerHTML=hist.length?hist.map((h,i)=>`<button class="cd it" data-h="${i}"><span class="no">${h.m.filter(x=>x.r=='a').length}</span><div><b>${E(h.m.find(x=>x.r=='u')?.text)}</b><span class="mu">${new Date(h.t).toLocaleDateString(LOC(),{day:'numeric',month:'long',year:'numeric'})}</span></div><span class="btn">استعادة</span></button>`).join(''):'<p class="empt">لا توجد محادثات سابقة بعد. ستظهر هنا عند بدء محادثة جديدة.</p>';
+ if(p=='refs'){const ks=Object.keys(ART).sort((a,b)=>a-b);$('#rl').innerHTML=ks.length?ks.map(n=>`<button class="cd it" data-art="${n}"><span class="no">${n}</span><div><b>المادة ${n}</b><span class="mu">${E(ART[n].r?'ملغاة':(ART[n].t||'').slice(0,120))}</span></div></button>`).join(''):'<p class="empt">لم تُستخدم أي مواد بعد. ستظهر هنا المواد التي تُذكر في الإجابات.</p>'}
+ if(p=='chat')atBottom()}
+$('#q').oninput=upd;$('#q').onkeydown=e=>{if(e.key=='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();go()}};
+$('#send').onclick=()=>go();$('#stop').onclick=()=>ctrl?.abort();
+document.onclick=async e=>{const fb=e.target.closest('[data-fb]');if(fb){const i=+fb.dataset.i,m=msgs[i];m.fb=fb.dataset.fb;sv(K,msgs);render();
+  try{await fetch(API+'/feedback',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({rating:m.fb,question:msgs[i-1]?.text||'',articles:(m.sources||[]).map(x=>x.article_number),critic_passed:m.critic?m.critic.passed:null})})}catch{}}
+ const cpb=e.target.closest('[data-copy]');if(cpb){try{navigator.clipboard.writeText(msgs[+cpb.dataset.copy].text);cpb.textContent='تم النسخ'}catch{}setTimeout(()=>cpb.textContent='نسخ',1500)}
+ const a=e.target.closest('[data-art]'),r=e.target.closest('[data-retry]'),h=e.target.closest('[data-h]');
+ if(a)openArt(a.dataset.art);
+ if(r){const i=+r.dataset.retry,q=msgs[i-1].text;msgs.splice(i-1,2);go(q)}
+ if(h&&!busy){const x=hist.splice(+h.dataset.h,1)[0];archive();msgs=x.m;sv(H,hist);sv(K,msgs);location.hash='#/chat';render()}};
+$('#rsf').onsubmit=async e=>{e.preventDefault();const v=$('#rsn').value.trim();if(!v)return;
+ if(/^\d+$/.test(v)){const n=+v;if(n>=1&&n<=1149)openArt(n);return}
+ $('#rs').innerHTML='<p class="empt">جارٍ البحث…</p>';
+ try{const r=await fetch(API+'/search?q='+encodeURIComponent(v)+'&limit=8');if(!r.ok)throw 0;const h=await r.json();
+  $('#rs').innerHTML=h.length?h.map(x=>`<button class="cd it" data-art="${x.article_number}"><span class="no">${x.article_number}</span><div><b>المادة ${x.article_number}${x.is_repealed?' (ملغاة)':''}</b><span class="mu">${E(x.snippet)}</span></div></button>`).join(''):'<p class="empt">لا نتائج مطابقة.</p>'}
+ catch{$('#rs').innerHTML='<p class="empt">تعذّر البحث. تأكد من تشغيل الخادم.</p>'}};
+$('#ex').onclick=()=>{if(!msgs.length)return;const md=msgs.map(m=>m.r=='u'?'## السؤال\n'+m.text:'### الإجابة\n'+(m.text||'')+(m.sources?.length?'\n\n**المواد:** '+m.sources.map(x=>x.article_number).join('، '):'')).join('\n\n---\n\n')+'\n';
+ const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([md],{type:'text/markdown;charset=utf-8'}));a.download='civil-code-chat.md';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
+$('#nw').onclick=()=>{if(busy)return;archive();msgs=[];sv(K,msgs);render();$('#q').focus()};
+$('#cl').onclick=e=>{const b=e.currentTarget;if(b.dataset.c){msgs=[];hist=[];ART={};try{[K,H,C].forEach(k=>localStorage.removeItem(k))}catch{}b.textContent='مسح السجل';delete b.dataset.c;render()}else{b.dataset.c=1;b.textContent='تأكيد المسح؟';setTimeout(()=>{b.textContent='مسح السجل';delete b.dataset.c},3000)}};
+$('#dc').onclick=$('#ov').onclick=closeArt;document.onkeydown=e=>{if(e.key=='Escape'&&!$('#dr').hidden)closeArt()};
+const setTheme=(t,save)=>{document.documentElement.dataset.theme=t;document.querySelectorAll('#th button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.t===t)));if(save)try{localStorage.setItem(TH,t)}catch{}};document.querySelectorAll('#th button').forEach(b=>b.onclick=()=>setTheme(b.dataset.t,true));{let t=null;try{t=localStorage.getItem(TH)}catch{}if(t!=='light'&&t!=='dark')t=matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';setTheme(t,false)}
+addEventListener('hashchange',route);route();render();updCase();poll();
+</script><script>
+// Clear old messages from localStorage that still have the old badge/format
+try {
+  localStorage.removeItem('cc.cur'); localStorage.removeItem('cc.hist');
+  localStorage.removeItem('chat_history');
+} catch(e){}
+applyLang();
+</script>
+</body></html>

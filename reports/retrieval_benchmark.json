@@ -1,0 +1,36 @@
+{
+  "chunks_sha256": "d66c2d07c16876f3137de4da734f392cca79d8df4e3efacdceb57f936684ac61",
+  "golden_labels_human_reviewed": 0,
+  "results": {
+    "bm25": {
+      "all": {
+        "hit@1": 0.7167,
+        "hit@3": 0.8833,
+        "hit@5": 0.9,
+        "hit@10": 0.9167,
+        "mrr": 0.7899,
+        "n": 60
+      },
+      "semantic_only": {
+        "hit@1": 0.6981,
+        "hit@3": 0.8868,
+        "hit@5": 0.9057,
+        "hit@10": 0.9245,
+        "mrr": 0.781,
+        "n": 53
+      }
+    },
+    "dense": {
+      "status": "BLOCKED",
+      "reason": "ModuleNotFoundError: No module named 'sentence_transformers'"
+    },
+    "hybrid_rrf": {
+      "status": "BLOCKED",
+      "reason": "ModuleNotFoundError: No module named 'sentence_transformers'"
+    },
+    "hybrid_rerank": {
+      "status": "BLOCKED",
+      "reason": "ModuleNotFoundError: No module named 'sentence_transformers'"
+    }
+  }
+}

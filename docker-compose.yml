@@ -1,0 +1,80 @@
+# Whole stack, fully local:  API + Qdrant + Prometheus/Pushgateway/Grafana.
+#
+#   cp .env.example .env
+#   docker compose up -d --build        # first run downloads models (internet needed once)
+#
+# One-shot init services run first (and are skipped quickly on later runs):
+#   init-models  -> embedding model into the `models` volume
+#   indexer      -> embeds data/serving/chunks.json into Qdrant (idempotent upsert)
+#
+# UI http://localhost:8000 · Grafana http://localhost:3000 (admin/admin) · Prometheus :9090 · Qdrant :6333
+# Image: pulled from Docker Hub as ${DOCKERHUB_USERNAME}/civil-code-rag when it exists, else built here.
+x-app: &app
+  image: ${DOCKERHUB_USERNAME:-local}/civil-code-rag:latest
+  build: .
+  env_file: [.env]
+  extra_hosts: ["host.docker.internal:host-gateway"]   # needed on Linux; Docker Desktop has it built in
+  environment: &app-env
+    QDRANT_URL: http://qdrant:6333
+    LLM_BASE_URL: http://host.docker.internal:11434/v1   # Ollama runs on the host (Windows app)
+    MODELS_DIR: /app/models
+  volumes:
+    - models:/app/models
+    - app-processed:/app/data/processed   # drift baseline written by the indexer
+    - app-logs:/app/data/logs             # query + feedback logs (survive container recreation)
+
+services:
+  init-models:
+    <<: *app
+    command: ["python", "scripts/data/download_models.py"]
+    environment:
+      <<: *app-env
+      LOCAL_ONLY: "false"   # this one step is allowed to reach Hugging Face
+      HF_OFFLINE: "false"
+    restart: "no"
+
+  qdrant:
+    image: qdrant/qdrant:v1.12.4
+    ports: ["6333:6333"]
+    volumes: [qdrant-data:/qdrant/storage]
+
+  indexer:
+    <<: *app
+    command: ["python", "scripts/data/build_index.py", "--input", "data/serving/chunks.json"]
+    depends_on:
+      init-models: { condition: service_completed_successfully }
+      qdrant: { condition: service_started }
+    restart: "no"
+
+  api:
+    <<: *app
+    ports: ["8000:8000"]
+    depends_on:
+      indexer: { condition: service_completed_successfully }
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus:v2.55.1
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./monitoring/alerts.yml:/etc/prometheus/alerts.yml:ro
+    ports: ["9090:9090"]
+    depends_on: [api]
+
+  pushgateway:
+    image: prom/pushgateway:v1.10.0
+    ports: ["9091:9091"]
+
+  grafana:
+    image: grafana/grafana:11.3.1
+    ports: ["3000:3000"]
+    volumes:
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on: [prometheus]
+
+volumes:
+  qdrant-data:
+  models:
+  app-processed:
+  app-logs:

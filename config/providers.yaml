@@ -1,0 +1,36 @@
+# Provider profiles: WHICH backends/models to use. Secrets (API keys) never go
+# here -- they stay in .env / GitHub Secrets.
+#
+# Select a profile with PROVIDER_PROFILE=<name> (in .env). Any variable you set
+# explicitly in .env or the environment still wins over the profile.
+profiles:
+  local:             # e5-small + embedded Qdrant + Ollama, no reranker; NOTHING external
+    local_embedding_model: intfloat/multilingual-e5-small
+    embedding_dimension: 384
+    local_only: true
+    web_search_enabled: false
+    reranker_enabled: false
+    llm_base_url: http://localhost:11434/v1
+    llm_model_primary: qwen2.5:3b
+    llm_model_fallbacks: []
+
+  local_full:        # same as local with a bigger LLM (qwen2.5:7b; slow on this laptop)
+    local_embedding_model: intfloat/multilingual-e5-small
+    embedding_dimension: 384
+    local_only: true
+    web_search_enabled: false
+    reranker_enabled: false
+    llm_base_url: http://localhost:11434/v1
+    llm_model_primary: qwen2.5:7b-instruct
+    llm_model_fallbacks: []
+
+  hybrid_api:        # local embeddings + Ollama LLM, hosted Voyage reranker, Tavily web fallback
+    local_embedding_model: intfloat/multilingual-e5-small   # embeddings stay local
+    embedding_dimension: 384
+    local_only: false
+    web_search_enabled: true       # also needs TAVILY_API_KEY in your own .env
+    reranker_enabled: true
+    # also needs VOYAGE_API_KEY in your own .env
+    llm_base_url: http://localhost:11434/v1
+    llm_model_primary: qwen2.5:3b
+    llm_model_fallbacks: []
