@@ -63,7 +63,7 @@ jobs:
           fi
 
       - name: Build image for the smoke test
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           load: true
@@ -94,7 +94,7 @@ jobs:
 
       - name: Push to Docker Hub
         if: steps.plan.outputs.push == 'true'
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           push: true
