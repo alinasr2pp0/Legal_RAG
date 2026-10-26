@@ -1,4 +1,6 @@
-import requests, json, sys
+
+import requests
+
 url='http://127.0.0.1:8000/ask'
 payload={'question':'ما هو تعريف العقد؟'}
 try:

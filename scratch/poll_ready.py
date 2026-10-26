@@ -1,4 +1,8 @@
-import time, requests, sys
+import sys
+import time
+
+import requests
+
 url='http://127.0.0.1:8002/ready'
 for i in range(6):
     try:

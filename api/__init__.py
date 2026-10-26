@@ -7,6 +7,7 @@ if str(_src_dir) not in sys.path:
     sys.path.insert(0, str(_src_dir))
 
 # Re-export the FastAPI application and related symbols.
+# ruff: noqa: E402
 from src.api import main as main
 
 __all__ = ["main"]

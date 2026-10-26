@@ -1,6 +1,6 @@
+import importlib
 import sys
 from pathlib import Path
-import importlib
 
 # Ensure the project's src directory is on the import path.
 _src_dir = Path(__file__).resolve().parent / "src"

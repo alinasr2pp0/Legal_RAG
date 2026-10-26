@@ -1,4 +1,7 @@
-import requests, sys
+import sys
+
+import requests
+
 url='http://127.0.0.1:8002/ready'
 try:
     r=requests.get(url, timeout=30)

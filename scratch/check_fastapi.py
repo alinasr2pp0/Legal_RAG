@@ -1,4 +1,7 @@
-import requests, sys
+import sys
+
+import requests
+
 base='http://127.0.0.1:8002'
 for ep in ['/health','/ready']:
     try:
