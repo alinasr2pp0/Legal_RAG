@@ -11,36 +11,34 @@ from __future__ import annotations
 import json
 import os
 import re
+import sys
 import threading
 import time
 from collections.abc import Iterator
 from functools import lru_cache
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Literal
+from typing import TYPE_CHECKING, Annotated, Any, Literal
 
-from fastapi import Body, FastAPI, HTTPException, Query
+from fastapi import Body, FastAPI, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 from pydantic import BaseModel, Field
 from starlette.responses import FileResponse, Response, StreamingResponse
 
-# Ensure the project ``src`` directory is on the Python import path so that top‑level imports like
+# Ensure the project ``src`` directory is on the Python import path so that top-level imports like
 # ``from core.config import settings`` work when the app is started from the repository root.
-import sys
-from pathlib import Path
 _src_dir = Path(__file__).resolve().parents[1]  # points to the ``src`` folder
 if str(_src_dir) not in sys.path:
     sys.path.insert(0, str(_src_dir))
 
 from .cases import router as cases_router
 from core.cache import TTLCache, normalize_key
+from core.case_log import get_case_answers, log_case_answer
 from core.case_store import CaseError, case_store
-from core.case_log import log_case_answer, get_case_answers
-from core.case_log import log_case_answer, get_case_answers
 from core.config import settings
-from core.logging_config import request_id_var
 from core.feedback import feedback_counts, log_feedback
 from core.guardrails import INJECTION_REFUSAL, detect_injection, redact_pii
+from core.logging_config import request_id_var
 from core.models import Chunk, ScoredChunk
 from core.query_log import log_query
 from rag.monitoring.exporter import (
@@ -70,9 +68,9 @@ if settings.cors_origins:
         allow_headers=["Content-Type", "X-Filename"],
     )
 
-# Request‑ID middleware: propagate X-Request-ID header and expose to logging
+# Request-ID middleware: propagate X-Request-ID header and expose to logging
 import logging
-from fastapi import Request
+
 
 @app.middleware("http")
 async def request_id_middleware(request: Request, call_next):
@@ -89,14 +87,13 @@ async def request_id_middleware(request: Request, call_next):
     token = request_id_var.set(request_id)
     try:
         response = await call_next(request)
-        # Add the request ID to the response for client visibility.
         response.headers["X-Request-ID"] = request_id
-        # Log the request method and path (without query parameters).
         logger = logging.getLogger("api")
         logger.info(f"{request.method} {request.url.path}")
         return response
     finally:
         request_id_var.reset(token)
+
 
 # project-root /Frontend (src/api/main.py -> parents[2]); FRONTEND_DIR overrides it
 _FRONTEND = Path(os.getenv("FRONTEND_DIR") or Path(__file__).resolve().parents[2] / "Frontend")
@@ -118,7 +115,7 @@ _answer_cache: TTLCache[AskResponse] = TTLCache(
 
 class AskRequest(BaseModel):
     question: str = Field(min_length=1, max_length=settings.max_question_chars)
-    case_id: str | None = Field(default=None, max_length=32)  # use that case's uploaded documents
+    case_id: str | None = Field(default=None, max_length=32)
     debug: bool = Field(False, description="Return retrieval diagnostics when true")
 
 
@@ -132,7 +129,7 @@ class CriticInfo(BaseModel):
     grounding: float
     issues: list[str]
     revisions: int
-    refusal: bool = False  # an honest "the texts are not sufficient" answer
+    refusal: bool = False
 
 
 class CaseSourceRef(BaseModel):
@@ -148,7 +145,8 @@ class AskResponse(BaseModel):
     critic: CriticInfo | None = None
     pii_redacted: list[str] = []
     used_web_search: bool = False
-    debug_info: list[dict] = []  # added for regression diagnostics
+    debug_info: list[dict] = []
+
 
 _ASK_BODY_EXAMPLES = {
     "general_question": {
@@ -172,19 +170,17 @@ def _load_chunks() -> list[Chunk]:
         )
     with open(chunks_path, encoding="utf-8") as f:
         chunks = [Chunk(**item) for item in json.load(f)]
-    # Load additional Arabic legal texts defined in rag.extra_texts
     try:
         from rag.extra_texts import extra_chunks
+
         chunks.extend(extra_chunks())
-    except Exception as e:
-        logging.getLogger("api").warning(f"Failed to load extra Arabic legal text: {e}")
+    except Exception as exc:  # noqa: BLE001
+        logging.getLogger("api").warning(f"Failed to load extra Arabic legal text: {exc}")
     return chunks
 
 
 def _get_pipeline() -> dict[str, object]:
-    """Build the pipeline components once, on first use. Raises a clear
-    error (surfaced as HTTP 503) if required keys/index are missing,
-    instead of failing at import time and blocking /health checks."""
+    """Build the pipeline components once, on first use."""
     if _pipeline:
         return _pipeline
     with _pipeline_lock:
@@ -249,8 +245,8 @@ class ArticleInfo(BaseModel):
     text: str
     is_repealed: bool
     chapter: str | None = None
-    text_missing: bool = False  # the source PDF has no text for this article
-    text_incomplete: bool = False  # part of the Arabic text is absent from the source
+    text_missing: bool = False
+    text_incomplete: bool = False
 
 
 @lru_cache(maxsize=1)
@@ -300,8 +296,11 @@ def feedback(request: FeedbackRequest) -> Response:
     """Thumbs up/down on an answer (question + comment are PII-redacted before storage)."""
     try:
         log_feedback(
-            request.rating, request.question, request.comment,
-            request.articles, request.critic_passed,
+            request.rating,
+            request.question,
+            request.comment,
+            request.articles,
+            request.critic_passed,
         )
     except OSError as exc:
         raise HTTPException(status_code=500, detail=f"feedback not saved: {exc}") from exc
@@ -323,7 +322,8 @@ def _bm25() -> BM25Index:
 
 @app.get("/search", response_model=list[SearchHit])
 def search_articles(
-    q: str = Query(min_length=1, max_length=200), limit: int = Query(8, ge=1, le=20)
+    q: str = Query(min_length=1, max_length=200),
+    limit: int = Query(8, ge=1, le=20),
 ) -> list[SearchHit]:
     """Keyword search over the articles (BM25, no models needed)."""
     try:
@@ -363,8 +363,7 @@ def health() -> dict[str, str]:
 
 
 def _readiness_problems(pipeline: dict[str, Any]) -> list[str]:
-    """Critical dependencies beyond "the objects were constructed": LLM server reachable and
-    the model present, vector index consistent with the served corpus + embedder."""
+    """Critical dependencies beyond "the objects were constructed"."""
     from rag.indexing.manifest import index_problems
 
     problems: list[str] = []
@@ -376,7 +375,7 @@ def _readiness_problems(pipeline: dict[str, Any]) -> list[str]:
     except Exception as exc:  # noqa: BLE001
         indexed = None
         problems.append(f"vector store unreachable: {exc}")
-    embedder = getattr(retriever.embedder, "inner", retriever.embedder)  # unwrap the cache
+    embedder = getattr(retriever.embedder, "inner", retriever.embedder)
     problems += index_problems(
         settings.chunks_path,
         model=getattr(embedder, "model_name", settings.local_embedding_model),
@@ -393,16 +392,17 @@ def _llm_problems() -> list[str]:
 
     url = settings.llm_base_url.rstrip("/") + "/models"
     try:
-        r = httpx.get(
-            url, timeout=3.0,
+        response = httpx.get(
+            url,
+            timeout=3.0,
             headers={"Authorization": f"Bearer {settings.llm_api_key}"},
         )
-        r.raise_for_status()
-        served = {m.get("id") for m in r.json().get("data", [])}
+        response.raise_for_status()
+        served = {model.get("id") for model in response.json().get("data", [])}
     except Exception as exc:  # noqa: BLE001
         return [f"LLM server unreachable at {url}: {exc}"]
     wanted = [settings.llm_model_primary]
-    missing = [m for m in wanted if m not in served]
+    missing = [model for model in wanted if model not in served]
     return [f"LLM model not served (pull it first): {', '.join(missing)}"] if missing else []
 
 
@@ -420,6 +420,7 @@ def ready() -> dict[str, object]:
             problems += _readiness_problems(pipeline)
         except (RuntimeError, OSError, ValueError) as exc:
             import traceback
+
             traceback.print_exc()
             problems.append(f"RAG pipeline unavailable: {exc}")
     if problems:
@@ -478,7 +479,6 @@ def cache_stats() -> dict[str, dict[str, float | int]]:
 
 
 def _sync_external_metrics() -> None:
-    # 1. RAGAS scores from latest evaluation run
     ragas_path = Path("data/eval/ragas_scores.json")
     if ragas_path.is_file():
         try:
@@ -488,7 +488,6 @@ def _sync_external_metrics() -> None:
         except Exception:
             pass
 
-    # 2. Drift metrics from latest drift run
     drift_path = Path("data/logs/drift_history.jsonl")
     if drift_path.is_file():
         try:
@@ -510,8 +509,7 @@ def metrics() -> Response:
 
 
 def _answer(question: str, case_id: str | None = None, debug: bool = False) -> AskResponse:
-    """Handbook-spec endpoint: {"question": "..."} -> {"answer": "...",
-    "sources": [{"article_number": N, "citation": "..."}]} (+ critic info)."""
+    """Handbook-spec endpoint: {"question": "..."} -> {"answer": "..."}."""
     start = time.perf_counter()
     if settings.injection_guard_enabled and detect_injection(question):
         record_query((time.perf_counter() - start) * 1000)
@@ -524,7 +522,7 @@ def _answer(question: str, case_id: str | None = None, debug: bool = False) -> A
             extra = case_store.search(case_id, question)
         except CaseError as exc:
             raise HTTPException(status_code=exc.status, detail=str(exc)) from exc
-    # Case answers depend on private documents: never served from / stored in the shared cache
+
     cache_key = normalize_key(question)
     if settings.cache_enabled and not case_id:
         cached = _answer_cache.get(cache_key)
@@ -533,9 +531,11 @@ def _answer(question: str, case_id: str | None = None, debug: bool = False) -> A
             latency = (time.perf_counter() - start) * 1000
             record_query(latency)
             stats.record(
-                latency_ms=latency, passed=cached.critic.passed if cached.critic else None,
+                latency_ms=latency,
+                passed=cached.critic.passed if cached.critic else None,
                 grounding=cached.critic.grounding if cached.critic else None,
-                cache_hit=True, articles=[x.article_number for x in cached.sources],
+                cache_hit=True,
+                articles=[x.article_number for x in cached.sources],
             )
             return cached
 
@@ -545,8 +545,6 @@ def _answer(question: str, case_id: str | None = None, debug: bool = False) -> A
         raise HTTPException(status_code=503, detail=str(exc)) from exc
     orchestrator: Orchestrator = pipeline["orchestrator"]  # type: ignore[assignment]
 
-    # Traces may leave the machine (Langfuse is exempt from LOCAL_ONLY): send only the
-    # PII-redacted question, and never trace answers built from private case documents.
     traced_q = redact_pii(question).text if settings.pii_redaction_enabled else question
     with trace_ask_request(traced_q, enabled=not case_id) as (spans, _correlation_id):
         try:
@@ -555,13 +553,12 @@ def _answer(question: str, case_id: str | None = None, debug: bool = False) -> A
             raise HTTPException(status_code=503, detail=str(exc)) from exc
         spans.log_generation(
             model=settings.llm_model_primary,
-            prompt=result.question,  # PII-redacted
+            prompt=result.question,
             completion=result.answer,
         )
 
     verdict = result.verdict
     if not case_id:
-        # case questions may contain private facts: keep them out of the query log
         log_query(result.question, verdict.passed if verdict else None)
     latency = (time.perf_counter() - start) * 1000
     record_query(latency)
@@ -592,164 +589,54 @@ def _answer(question: str, case_id: str | None = None, debug: bool = False) -> A
             SourceRef(article_number=c.article_number, citation=c.citation)
             for c in result.citations
         ],
-        critic=CriticInfo(
-            passed=verdict.passed,
-            grounding=round(verdict.grounding, 3),
-            issues=verdict.issues,
-            revisions=result.revisions,
-            refusal=verdict.refusal,
-        )
-        if verdict
-        else None,
+        critic=(
+            CriticInfo(
+                passed=verdict.passed,
+                grounding=round(verdict.grounding, 3),
+                issues=verdict.issues,
+                revisions=result.revisions,
+                refusal=verdict.refusal,
+            )
+            if verdict
+            else None
+        ),
         pii_redacted=sorted(set(result.pii_found)),
         used_web_search=result.used_web,
         case_sources=[
             CaseSourceRef(
-                doc=str(c.chunk.metadata.get("doc")), page=int(c.chunk.metadata.get("page") or 0),
+                doc=str(c.chunk.metadata.get("doc")),
+                page=int(c.chunk.metadata.get("page") or 0),
                 snippet=c.chunk.text[:220],
             )
             for c in extra
         ],
     )
-    # Attach debug diagnostics if requested
     if debug:
         debug_items = []
-        # Include top retrieved chunks (up to 20) with scores and metadata
         for idx, sc in enumerate(result.evidence_chunks[:20], start=1):
             chunk = sc.chunk
             meta = chunk.metadata
-            debug_items.append({
-                "rank": idx,
-                "score": sc.score,
-                "article_number": meta.get("number"),
-                "article_id": meta.get("article_id"),
-                "citation": f"Egyptian Civil Code, Article {meta.get('number')}",
-                "snippet": chunk.text[:200].replace("\n", " "),
-                "source_file": meta.get("source_file"),
-            })
-        # Ensure all explicitly identified article numbers are present in debug_info
+            debug_items.append(
+                {
+                    "rank": idx,
+                    "score": sc.score,
+                    "article_number": meta.get("number"),
+                    "article_id": meta.get("article_id"),
+                    "citation": f"Egyptian Civil Code, Article {meta.get('number')}",
+                    "snippet": chunk.text[:200].replace("\n", " "),
+                    "source_file": meta.get("source_file"),
+                }
+            )
         for n in sorted(set(result.article_numbers)):
             if not any(item.get("article_number") == n for item in debug_items):
                 debug_items.append({"article_number": n})
         response.debug_info = debug_items
-    # Log the answer for the case (if any) so the UI can show a history.
     if case_id:
-        from core.case_log import log_case_answer
         log_case_answer(case_id, response)
-    # never cache PII questions, private-case answers or answers the critic did not verify
     if (
-        settings.cache_enabled and not result.pii_found and not case_id
-        and (verdict is None or verdict.passed)
-    ):
-        _answer_cache.set(cache_key, response)
-    return response
-    """Handbook-spec endpoint: {"question": "..."} -> {"answer": "...",
-    "sources": [{"article_number": N, "citation": "..."}]} (+ critic info)."""
-    start = time.perf_counter()
-    if settings.injection_guard_enabled and detect_injection(question):
-        record_query((time.perf_counter() - start) * 1000)
-        return AskResponse(answer=INJECTION_REFUSAL, sources=[])
-    extra: list[ScoredChunk] = []
-    if case_id:
-        if not settings.case_upload_enabled:
-            raise HTTPException(status_code=404, detail="ميزة مستندات القضية معطّلة")
-        try:
-            extra = case_store.search(case_id, question)
-        except CaseError as exc:
-            raise HTTPException(status_code=exc.status, detail=str(exc)) from exc
-    # Case answers depend on private documents: never served from / stored in the shared cache
-    cache_key = normalize_key(question)
-    if settings.cache_enabled and not case_id:
-        cached = _answer_cache.get(cache_key)
-        record_cache("answer", cached is not None)
-        if cached is not None:
-            latency = (time.perf_counter() - start) * 1000
-            record_query(latency)
-            stats.record(
-                latency_ms=latency, passed=cached.critic.passed if cached.critic else None,
-                grounding=cached.critic.grounding if cached.critic else None,
-                cache_hit=True, articles=[x.article_number for x in cached.sources],
-            )
-            return cached
-
-    try:
-        pipeline = _get_pipeline()
-    except RuntimeError as exc:
-        raise HTTPException(status_code=503, detail=str(exc)) from exc
-    orchestrator: Orchestrator = pipeline["orchestrator"]  # type: ignore[assignment]
-
-    # Traces may leave the machine (Langfuse is exempt from LOCAL_ONLY): send only the
-    # PII-redacted question, and never trace answers built from private case documents.
-    traced_q = redact_pii(question).text if settings.pii_redaction_enabled else question
-    with trace_ask_request(traced_q, enabled=not case_id) as (spans, _correlation_id):
-        try:
-            result = orchestrator.run(question, spans=spans, extra_chunks=extra or None)
-        except RuntimeError as exc:  # e.g. every LLM in the fallback chain failed
-            raise HTTPException(status_code=503, detail=str(exc)) from exc
-        spans.log_generation(
-            model=settings.llm_model_primary,
-            prompt=result.question,  # PII-redacted
-            completion=result.answer,
-        )
-
-    verdict = result.verdict
-    if not case_id:  # case questions may contain private facts: keep them out of the query log
-        log_query(result.question, verdict.passed if verdict else None)
-    latency = (time.perf_counter() - start) * 1000
-    record_query(latency)
-    stats.record(
-        latency_ms=latency,
-        passed=verdict.passed if verdict else None,
-        refusal=bool(verdict and verdict.refusal),
-        grounding=verdict.grounding if verdict else None,
-        revisions=result.revisions,
-        used_web=result.used_web,
-        pii=bool(result.pii_found),
-        explicit_article=bool(result.article_numbers),
-        articles=[c.article_number for c in result.citations],
-    )
-    record_answer(
-        verdict_passed=verdict.passed if verdict else None,
-        refusal=bool(verdict and verdict.refusal),
-        grounding=verdict.grounding if verdict else None,
-        revisions=result.revisions,
-        pii_kinds=result.pii_found,
-        used_web=result.used_web,
-        explicit_article=bool(result.article_numbers),
-    )
-
-    response = AskResponse(
-        answer=result.answer,
-        sources=[
-            SourceRef(article_number=c.article_number, citation=c.citation)
-            for c in result.citations
-        ],
-        critic=CriticInfo(
-            passed=verdict.passed,
-            grounding=round(verdict.grounding, 3),
-            issues=verdict.issues,
-            revisions=result.revisions,
-            refusal=verdict.refusal,
-        )
-        if verdict
-        else None,
-        pii_redacted=sorted(set(result.pii_found)),
-        used_web_search=result.used_web,
-        case_sources=[
-            CaseSourceRef(
-                doc=str(c.chunk.metadata.get("doc")), page=int(c.chunk.metadata.get("page") or 0),
-                snippet=c.chunk.text[:220],
-            )
-            for c in extra
-        ],
-    )
-    # Log the answer for the case (if any) so the UI can show a history.
-    if case_id:
-        from core.case_log import log_case_answer
-        log_case_answer(case_id, response)
-    # never cache PII questions, private-case answers or answers the critic did not verify
-    if (
-        settings.cache_enabled and not result.pii_found and not case_id
+        settings.cache_enabled
+        and not result.pii_found
+        and not case_id
         and (verdict is None or verdict.passed)
     ):
         _answer_cache.set(cache_key, response)
@@ -758,17 +645,17 @@ def _answer(question: str, case_id: str | None = None, debug: bool = False) -> A
 
 @app.post("/ask", response_model=AskResponse)
 def ask(
-    request: AskRequest = Body(openapi_examples=_ASK_BODY_EXAMPLES),
+    request: Annotated[AskRequest, Body(openapi_examples=_ASK_BODY_EXAMPLES)],
 ) -> AskResponse:
     """Handle POST /ask. Forward debug flag to internal _answer."""
     return _answer(request.question, request.case_id, debug=request.debug)
-    return _answer(request.question, request.case_id)
 
-# Compatibility GET endpoints for UI that historically used GET
+
 @app.get("/ask", response_model=AskResponse)
 def ask_get(question: str, case_id: str | None = None) -> AskResponse:
     """Legacy GET wrapper for the Ask endpoint."""
     return _answer(question, case_id)
+
 
 @app.get("/ask/stream", response_model=None)
 def ask_stream_get(question: str, case_id: str | None = None) -> StreamingResponse:
@@ -788,15 +675,9 @@ def _token_chunks(text: str) -> Iterator[str]:
 
 @app.post("/ask/stream")
 def ask_stream(
-    request: AskRequest = Body(openapi_examples=_ASK_BODY_EXAMPLES),
+    request: Annotated[AskRequest, Body(openapi_examples=_ASK_BODY_EXAMPLES)],
 ) -> StreamingResponse:
-    """Same full RAG pipeline as /ask (retrieve -> write -> critic loop, citations,
-    PII redaction), delivered as a stream: ``status`` events while it works, the
-    verified answer as ``data:`` word chunks, then one ``result`` event carrying
-    the complete AskResponse JSON (sources, critic, flags).
-
-    The critic needs the whole draft, so streaming starts after verification:
-    what the user sees is always the checked answer, never an unverified draft."""
+    """Same full RAG pipeline as /ask, delivered as a stream."""
 
     def events() -> Iterator[str]:
         yield _sse("status", "searching")
@@ -805,7 +686,7 @@ def ask_stream(
         except HTTPException as exc:
             yield _sse("error", json.dumps({"status": exc.status_code, "detail": str(exc.detail)}))
             return
-        except Exception as exc:  # noqa: BLE001 - never leave the stream hanging
+        except Exception as exc:  # noqa: BLE001
             yield _sse("error", json.dumps({"status": 500, "detail": str(exc)}))
             return
         for chunk in _token_chunks(response.answer):
@@ -813,16 +694,17 @@ def ask_stream(
         yield _sse("result", response.model_dump_json())
 
     return StreamingResponse(
-        events(), media_type="text/event-stream", headers={"Cache-Control": "no-cache"}
+        events(),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache"},
     )
 
 
 def run() -> None:
     import uvicorn
 
-    import os
-    _port = int(os.getenv("PORT", "8000"))
-    uvicorn.run("api.main:app", host="0.0.0.0", port=_port, reload=False)
+    port = int(os.getenv("PORT", "8000"))
+    uvicorn.run("api.main:app", host="0.0.0.0", port=port, reload=False)
 
 
 if __name__ == "__main__":
