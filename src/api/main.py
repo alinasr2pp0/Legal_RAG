@@ -758,7 +758,7 @@ def _answer(question: str, case_id: str | None = None, debug: bool = False) -> A
 
 @app.post("/ask", response_model=AskResponse)
 def ask(
-    request: AskRequest = Body(openapi_examples=_ASK_BODY_EXAMPLES),
+    request: AskRequest = Body(openapi_examples=_ASK_BODY_EXAMPLES),  # noqa: B008
 ) -> AskResponse:
     """Handle POST /ask. Forward debug flag to internal _answer."""
     return _answer(request.question, request.case_id, debug=request.debug)
@@ -788,7 +788,7 @@ def _token_chunks(text: str) -> Iterator[str]:
 
 @app.post("/ask/stream")
 def ask_stream(
-    request: AskRequest = Body(openapi_examples=_ASK_BODY_EXAMPLES),
+    request: AskRequest = Body(openapi_examples=_ASK_BODY_EXAMPLES),  # noqa: B008
 ) -> StreamingResponse:
     """Same full RAG pipeline as /ask (retrieve -> write -> critic loop, citations,
     PII redaction), delivered as a stream: ``status`` events while it works, the
