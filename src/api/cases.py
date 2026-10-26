@@ -12,7 +12,6 @@ from urllib.parse import unquote
 from fastapi import APIRouter, HTTPException, Request, Response
 from pydantic import BaseModel, Field
 
-from core.case_log import get_case_answers
 from core.case_store import Case, CaseError, case_store
 from core.config import settings
 from rag.ingestion.case_extract import (
@@ -114,14 +113,7 @@ def delete_document(case_id: str, doc_id: str) -> Response:
         raise HTTPException(status_code=exc.status, detail=str(exc)) from exc
     return Response(status_code=204)
 
-@router.get("/{case_id}/answers", response_model=list[dict])
-def case_answers(case_id: str) -> list[dict]:
-    """Return the logged answers for a case (history)."""
-    _require_enabled()
-    try:
-        return get_case_answers(case_id)
-    except CaseError as exc:
-        raise HTTPException(status_code=exc.status, detail=str(exc)) from exc
+
 
 
 @router.delete("/{case_id}", status_code=204)
@@ -129,11 +121,4 @@ def delete_case(case_id: str) -> Response:
     case_store.delete(case_id)
     return Response(status_code=204)
 
-@router.get("/{case_id}/answers", response_model=list[dict])
-def case_answers(case_id: str) -> list[dict]:
-    """Return the logged answers for a case (history)."""
-    _require_enabled()
-    try:
-        return get_case_answers(case_id)
-    except CaseError as exc:
-        raise HTTPException(status_code=exc.status, detail=str(exc)) from exc
+

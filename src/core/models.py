@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
-from enum import Enum
+from enum import StrEnum
 
 from pydantic import BaseModel, Field
 
 
-class ArticleType(str, Enum):
+class ArticleType(StrEnum):
     """Structural unit type inside the Civil Code."""
 
     BOOK = "book"        # كتاب
