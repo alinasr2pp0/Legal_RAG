@@ -37,7 +37,7 @@ def main():
     if hasattr(store, 'recreate'):
         store.recreate()
 
-    BATCH_SIZE = 100
+    batch_size = 100
     for i in range(0, len(chunks), BATCH_SIZE):
         batch = chunks[i:i + BATCH_SIZE]
         vectors = embedder.embed_documents([prepare_for_embedding(c.text) for c in batch])
