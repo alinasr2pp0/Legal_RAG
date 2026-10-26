@@ -32,8 +32,10 @@ class Settings(BaseSettings):
     local_embedding_batch_size: int = 8
     # None = auto (model name contains "e5"); true/false for a local folder named differently
     embedding_e5_prefixes: bool | None = None
-    qdrant_path: str = ""  # embedded mode disabled
-    qdrant_url: str = "http://localhost:6333"  # use external Qdrant server
+    qdrant_path: str = "./tmp_qdrant"  # embedded mode enabled by default
+
+    qdrant_url: str = ""  # embedded mode disabled by default; use external server only if set
+
     qdrant_collection: str = "civil_code"
 
     # --- LLM ---

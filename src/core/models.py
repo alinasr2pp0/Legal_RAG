@@ -6,6 +6,7 @@ try:
     from enum import StrEnum
 except ImportError:
     from enum import Enum
+
     class StrEnum(str, Enum):
         """Fallback StrEnum for Python <3.11"""
         pass
