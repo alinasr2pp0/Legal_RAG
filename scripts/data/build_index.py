@@ -1,3 +1,4 @@
+# ruff: noqa: E402
 """DVC stage: embed chunks and upsert into the vector store (Qdrant).
 Usage: python scripts/data/build_index.py --input data/processed/chunks.json
 """

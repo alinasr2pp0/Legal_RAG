@@ -1,3 +1,4 @@
+# ruff: noqa: E402
 """FastAPI app exposing the RAG pipeline. Run with:
     uvicorn api.main:app --host 0.0.0.0 --port 8000
 
