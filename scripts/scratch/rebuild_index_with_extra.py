@@ -38,11 +38,11 @@ def main():
         store.recreate()
 
     batch_size = 100
-    for i in range(0, len(chunks), BATCH_SIZE):
-        batch = chunks[i:i + BATCH_SIZE]
-        vectors = embedder.embed_documents([prepare_for_embedding(c.text) for c in batch])
-        store.upsert(batch, vectors)
-        print(f'Upserted {i + len(batch)}/{len(chunks)}')
+    for i in range(0, len(chunks), batch_size):
+            batch = chunks[i:i + batch_size]
+            vectors = embedder.embed_documents([prepare_for_embedding(c.text) for c in batch])
+            store.upsert(batch, vectors)
+            print(f'Upserted {i + len(batch)}/{len(chunks)}')
 
 if __name__ == '__main__':
     main()
