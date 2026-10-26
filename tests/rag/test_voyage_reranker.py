@@ -5,8 +5,8 @@ from core.config import Settings, settings
 from core.local_only import local_only_violations
 from core.models import Chunk, ScoredChunk
 from rag.indexing import factory
-from rag.reranking.reranker import PassThroughReranker, VoyageReranker
 from rag.reranking.exceptions import RerankerUnavailableError
+from rag.reranking.reranker import PassThroughReranker, VoyageReranker
 
 
 def _c(cid: str, text: str, **meta) -> ScoredChunk:

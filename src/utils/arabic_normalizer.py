@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Utility for lightweight Arabic text normalization.
 - Removes diacritics (tashkeel, tanween, shadda, etc.)

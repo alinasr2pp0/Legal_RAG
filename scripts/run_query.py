@@ -1,5 +1,5 @@
 import os
-import json
+
 import requests
 
 # Ensure UTF-8 output

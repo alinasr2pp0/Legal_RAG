@@ -8,12 +8,11 @@ timestamp so that the UI can display a history of interactions.
 
 import time
 from collections import defaultdict
-from typing import List, Tuple
 
-from .models import AskResponse, AskRequest
+from .models import AskResponse
 
 # Mapping case_id -> list of (timestamp, AskResponse)
-_case_answer_log: defaultdict[str, List[Tuple[float, AskResponse]]] = defaultdict(list)
+_case_answer_log: defaultdict[str, list[tuple[float, AskResponse]]] = defaultdict(list)
 
 
 def log_case_answer(case_id: str, response: AskResponse) -> None:
@@ -25,7 +24,7 @@ def log_case_answer(case_id: str, response: AskResponse) -> None:
     _case_answer_log[case_id].append((time.time(), response))
 
 
-def get_case_answers(case_id: str) -> List[dict]:
+def get_case_answers(case_id: str) -> list[dict]:
     """Return the logged answers for *case_id* as a list of dictionaries.
 
     Each dict contains ``timestamp`` (float seconds since epoch) and the

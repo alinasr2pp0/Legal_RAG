@@ -1,5 +1,5 @@
-import sys
 import json
+import sys
 from pathlib import Path
 
 # Ensure src is on the path
@@ -10,6 +10,7 @@ sys.path.append(str(src_path))
 from core.models import Chunk
 from rag.indexing.factory import build_embedder, build_vector_store, missing_requirements
 from rag.ingestion.legal_arabic_text import prepare_for_embedding
+
 
 def main():
     # Load existing chunks

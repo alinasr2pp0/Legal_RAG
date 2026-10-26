@@ -16,11 +16,10 @@ The script:
 import argparse
 import csv
 import json
-import os
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import List, Dict, Any
+from typing import Any
 
 import mlflow
 import requests
@@ -29,7 +28,7 @@ import requests
 # Helper functions
 # ---------------------------------------------------------------------------
 
-def load_dataset(path: Path) -> List[Dict[str, Any]]:
+def load_dataset(path: Path) -> list[dict[str, Any]]:
     """Load evaluation dataset.
 
     Expected format:
@@ -41,7 +40,7 @@ def load_dataset(path: Path) -> List[Dict[str, Any]]:
     with path.open("r", encoding="utf-8") as f:
         return json.load(f)
 
-def call_api(url: str, payload: Dict[str, Any]) -> Dict[str, Any]:
+def call_api(url: str, payload: dict[str, Any]) -> dict[str, Any]:
     """POST payload to the RAG ``/ask`` endpoint and return JSON response.
     ``debug`` must be true to obtain retrieval metadata.
     """
@@ -53,7 +52,7 @@ def call_api(url: str, payload: Dict[str, Any]) -> Dict[str, Any]:
     data["_latency_ms"] = latency_ms
     return data
 
-def compute_metrics(results: List[Dict[str, Any]]) -> Dict[str, float]:
+def compute_metrics(results: list[dict[str, Any]]) -> dict[str, float]:
     """Compute simple IR metrics from the result list.
     Supports Recall@k (k=1,3,5) and MRR when ``ground_truth`` is provided.
     """
@@ -100,7 +99,7 @@ def main() -> None:
     args = parser.parse_args()
 
     dataset = load_dataset(args.dataset)
-    results: List[Dict[str, Any]] = []
+    results: list[dict[str, Any]] = []
     for entry in dataset:
         question = entry["question"]
         payload = {"question": question, "debug": True}
@@ -149,7 +148,7 @@ def main() -> None:
             mlflow.log_metric("avg_latency_ms", sum(latencies) / len(latencies))
         mlflow.log_artifact(str(artifact_path))
 
-    print(f"Evaluation completed. Logged run to MLflow experiment 'Egyptian-Civil-Code-RAG'.")
+    print("Evaluation completed. Logged run to MLflow experiment 'Egyptian-Civil-Code-RAG'.")
     print(f"Metrics: {metrics}")
 
 if __name__ == "__main__":

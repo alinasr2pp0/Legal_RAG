@@ -1,11 +1,10 @@
 """Tests for idempotent behavior of build_index script when index already exists."""
 
+import hashlib
 import importlib.util
 import json
 import pathlib
 
-import hashlib
-import numpy as np
 import pytest
 
 from rag.embedding.embedder import BaseEmbedder

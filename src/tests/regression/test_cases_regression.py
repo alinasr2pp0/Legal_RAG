@@ -1,4 +1,6 @@
-import sys, os
+import os
+import sys
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 # -*- coding: utf-8 -*-
 """Regression tests for multiple legal scenarios.
@@ -8,6 +10,7 @@ all expected article numbers appear in the returned `debug_info`.
 
 import pytest
 from fastapi.testclient import TestClient
+
 from api.main import app
 
 client = TestClient(app)

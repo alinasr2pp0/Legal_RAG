@@ -7,6 +7,7 @@ The expected answers are taken from the problem statements you provided.
 
 import pytest
 from fastapi.testclient import TestClient
+
 from api.main import app
 
 client = TestClient(app)

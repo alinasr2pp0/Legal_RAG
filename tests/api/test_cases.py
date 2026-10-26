@@ -1,8 +1,8 @@
 """Case documents: text extraction, isolation from the law index, and the ask flow."""
+import base64
 import io
 import json
 import zipfile
-import base64
 from urllib.parse import quote
 
 from fastapi.testclient import TestClient

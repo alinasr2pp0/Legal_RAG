@@ -2,16 +2,18 @@
 Usage: python scripts/data/build_index.py --input data/processed/chunks.json
 """
 
-import sys
 import argparse
+import sys
 from pathlib import Path
+
 # Ensure src is on the Python path for imports
 project_root = Path(__file__).resolve().parents[2]
 src_path = project_root / 'src'
 sys.path.append(str(src_path))
 
-import numpy as np
 import json
+
+import numpy as np
 
 from core.models import Chunk
 from rag.indexing.factory import build_embedder, build_vector_store, missing_requirements

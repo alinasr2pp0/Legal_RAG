@@ -1,4 +1,6 @@
-import sys, os
+import os
+import sys
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 # -*- coding: utf-8 -*-
 """Regression tests for legal RAG.
@@ -7,6 +9,7 @@ Ensures that the stolen‑car scenario retrieves the correct article (977).
 
 import pytest
 from fastapi.testclient import TestClient
+
 from api.main import app
 
 client = TestClient(app)

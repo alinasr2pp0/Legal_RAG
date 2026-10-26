@@ -11,6 +11,10 @@ from __future__ import annotations
 import json
 import os
 import re
+
+# Ensure the project ``src`` directory is on the Python import path so that top‑level imports like
+# ``from core.config import settings`` work when the app is started from the repository root.
+import sys
 import threading
 import time
 from collections.abc import Iterator
@@ -24,37 +28,30 @@ from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 from pydantic import BaseModel, Field
 from starlette.responses import FileResponse, Response, StreamingResponse
 
-# Ensure the project ``src`` directory is on the Python import path so that top‑level imports like
-# ``from core.config import settings`` work when the app is started from the repository root.
-import sys
-from pathlib import Path
 _src_dir = Path(__file__).resolve().parents[1]  # points to the ``src`` folder
 if str(_src_dir) not in sys.path:
     sys.path.insert(0, str(_src_dir))
 
-from .cases import router as cases_router
 from core.cache import TTLCache, normalize_key
 from core.case_store import CaseError, case_store
-from core.case_log import log_case_answer, get_case_answers
-from core.case_log import log_case_answer, get_case_answers
 from core.config import settings
-from core.logging_config import request_id_var
 from core.feedback import feedback_counts, log_feedback
 from core.guardrails import INJECTION_REFUSAL, detect_injection, redact_pii
+from core.logging_config import request_id_var
 from core.models import Chunk, ScoredChunk
 from core.query_log import log_query
 from rag.monitoring.exporter import (
     record_answer,
     record_cache,
     record_drift,
-    record_drift_delta,
-    record_faithfulness,
     record_query,
     record_ragas,
     registry,
 )
 from rag.monitoring.stats import stats
 from rag.monitoring.tracing import trace_ask_request
+
+from .cases import router as cases_router
 
 if TYPE_CHECKING:
     from agents.orchestrator import Orchestrator
@@ -72,7 +69,9 @@ if settings.cors_origins:
 
 # Request‑ID middleware: propagate X-Request-ID header and expose to logging
 import logging
+
 from fastapi import Request
+
 
 @app.middleware("http")
 async def request_id_middleware(request: Request, call_next):
@@ -160,9 +159,9 @@ _ASK_BODY_EXAMPLES = {
 
 
 def _load_chunks() -> list[Chunk]:
-    from pathlib import Path
     import json
     import logging
+    from pathlib import Path
 
     chunks_path = Path(settings.chunks_path)
     if not chunks_path.exists():
@@ -818,9 +817,9 @@ def ask_stream(
 
 
 def run() -> None:
-    import uvicorn
-
     import os
+
+    import uvicorn
     _port = int(os.getenv("PORT", "8000"))
     uvicorn.run("api.main:app", host="0.0.0.0", port=_port, reload=False)
 

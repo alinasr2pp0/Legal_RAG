@@ -12,8 +12,8 @@ from urllib.parse import unquote
 from fastapi import APIRouter, HTTPException, Request, Response
 from pydantic import BaseModel, Field
 
-from core.case_store import Case, CaseError, case_store
 from core.case_log import get_case_answers
+from core.case_store import Case, CaseError, case_store
 from core.config import settings
 from rag.ingestion.case_extract import (
     SUPPORTED_EXT,

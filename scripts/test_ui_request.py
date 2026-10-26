@@ -1,4 +1,7 @@
-import requests, json, sys
+import json
+import sys
+
+import requests
 
 API = 'http://127.0.0.1:8001'
 question = 'ما شروط صحة العقد'

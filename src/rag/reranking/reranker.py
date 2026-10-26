@@ -2,11 +2,12 @@
 
 from __future__ import annotations
 
+import logging
 from abc import ABC, abstractmethod
 
 from core.config import settings
 from core.models import ScoredChunk
-import logging
+
 logger = logging.getLogger(__name__)
 
 
