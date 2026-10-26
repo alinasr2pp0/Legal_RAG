@@ -45,7 +45,7 @@ def main() -> None:
         by_article.setdefault(int(c["metadata"]["number"]), c["text"])
 
     rows = []
-    with httpx.Client(base_url=args.base_url, timeout=120.0) as client:
+    with httpx.Client(base_url=args.base_url, timeout=300.0) as client:
         for item in golden:
             r = client.post("/ask", json={"question": item["question"]})
             r.raise_for_status()

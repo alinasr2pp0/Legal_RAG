@@ -46,7 +46,11 @@ from core.query_log import log_query
 from rag.monitoring.exporter import (
     record_answer,
     record_cache,
+    record_drift,
+    record_drift_delta,
+    record_faithfulness,
     record_query,
+    record_ragas,
     registry,
 )
 from rag.monitoring.stats import stats
@@ -473,8 +477,35 @@ def cache_stats() -> dict[str, dict[str, float | int]]:
     }
 
 
+def _sync_external_metrics() -> None:
+    # 1. RAGAS scores from latest evaluation run
+    ragas_path = Path("data/eval/ragas_scores.json")
+    if ragas_path.is_file():
+        try:
+            with open(ragas_path, encoding="utf-8") as f:
+                data = json.load(f)
+            record_ragas({k: float(v) for k, v in data.items() if k != "num_questions"})
+        except Exception:
+            pass
+
+    # 2. Drift metrics from latest drift run
+    drift_path = Path("data/logs/drift_history.jsonl")
+    if drift_path.is_file():
+        try:
+            lines = drift_path.read_text(encoding="utf-8").strip().splitlines()
+            if lines:
+                last_drift = json.loads(lines[-1])
+                record_drift(
+                    mmd_score=float(last_drift.get("mmd", 0.0)),
+                    cosine_score=float(last_drift.get("cosine_drift", 0.0)),
+                )
+        except Exception:
+            pass
+
+
 @app.get("/metrics")
 def metrics() -> Response:
+    _sync_external_metrics()
     return Response(generate_latest(registry), media_type=CONTENT_TYPE_LATEST)
 
 

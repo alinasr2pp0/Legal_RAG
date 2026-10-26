@@ -74,7 +74,13 @@ class RagasRunner:
         )
 
         result = evaluate(dataset, metrics=self.metrics, llm=self.llm, embeddings=self.embeddings)
-        scores = {k: float(v) for k, v in result.items()}
+        if hasattr(result, "_repr_dict"):
+            raw_scores = result._repr_dict
+        elif hasattr(result, "items"):
+            raw_scores = dict(result.items())
+        else:
+            raw_scores = dict(result)
+        scores = {k: float(v) for k, v in raw_scores.items()}
 
         mlflow.set_tracking_uri(settings.mlflow_tracking_uri)
         mlflow.set_experiment(settings.mlflow_experiment_name)

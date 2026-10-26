@@ -3,6 +3,8 @@ __pycache__/
 .venv/
 venv/
 .env
+.env.backup*
+*.log
 *.egg-info/
 dist/
 build/
@@ -23,6 +25,19 @@ coverage.xml
 /data/eval/ragas_scores.json
 /data/eval/last_run_details.json
 /data/qdrant/
+/data/qdrant_new/
+/data/wal/
+/data/chunks_head/
+/data/01*/
+/data/queries.active
+/data/lock
+/data/eval_backup/
+/.qdrant-initialized
+/storage/
+/.dvc/config
+/services_*.pid
+/build_log.txt
+/regression-*.txt
 
 mlruns/
 *.dvc.lock.bak
