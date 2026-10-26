@@ -66,7 +66,7 @@ class VoyageReranker(BaseReranker):
             # If reranker is required, raise custom error; otherwise fallback to original order
             if settings.reranker_required:
                 from rag.reranking.exceptions import RerankerUnavailableError
-                raise RerankerUnavailableError(str(exc))
+                raise RerankerUnavailableError(str(exc)) from exc
             logger.warning(
                 "Voyage reranker request failed (%s) – falling back to fused order.",
                 exc,

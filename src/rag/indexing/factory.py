@@ -70,7 +70,7 @@ def build_reranker(cfg: Settings | None = None):  # type: ignore[no-untyped-def]
     except Exception as exc:  # noqa: BLE001 - degrade gracefully, never take /ask down
         if cfg.reranker_required:
             from rag.reranking.exceptions import RerankerUnavailableError
-            raise RerankerUnavailableError(str(exc))
+            raise RerankerUnavailableError(str(exc)) from exc
         logger.warning(
             "Voyage reranker unavailable (%s) -> using fused order. Set VOYAGE_API_KEY "
             "or RERANKER_ENABLED=false.",
